@@ -13,6 +13,7 @@ import {
   Sparkles,
   Check,
   Send,
+  X,
 } from "lucide-react";
 import type { Site } from "@/lib/types";
 
@@ -142,10 +143,56 @@ export default function OnboardingPage() {
     serviceDescriptions: Record<string, string>;
   } | null>(null);
 
+  // Service expansion state
+  const [showServiceSelector, setShowServiceSelector] = useState(false);
+  const [suggestedServices, setSuggestedServices] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [loadingServices, setLoadingServices] = useState(false);
+
   // Scroll to bottom of chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleConfirmServices = () => {
+    // Update onboarding data with selected services
+    setOnboardingData((prev) => ({
+      ...prev,
+      services: selectedServices,
+    }));
+
+    setShowServiceSelector(false);
+
+    // Continue to next question
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        text: `Great! You've selected ${selectedServices.length} services: ${selectedServices.slice(0, 3).join(", ")}${selectedServices.length > 3 ? ` and ${selectedServices.length - 3} more` : ""}.`,
+        isBot: true,
+      },
+    ]);
+
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          text: questions[currentQuestion + 1].question,
+          isBot: true,
+        },
+      ]);
+      setCurrentQuestion((prev) => prev + 1);
+    }, 500);
+  };
+
+  const toggleService = (service: string) => {
+    setSelectedServices((prev) =>
+      prev.includes(service)
+        ? prev.filter((s) => s !== service)
+        : [...prev, service]
+    );
+  };
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -170,6 +217,66 @@ export default function OnboardingPage() {
     }
 
     setOnboardingData(updatedData);
+
+    // Special handling for services - expand them with AI
+    if (question.key === "services") {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          text: "Let me suggest some specific services based on what you do...",
+          isBot: true,
+        },
+      ]);
+
+      setLoadingServices(true);
+
+      try {
+        const response = await fetch("/api/ai/expand-services", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contractorType: updatedData.contractorType,
+            services: updatedData.services,
+          }),
+        });
+
+        if (response.ok) {
+          const { expandedServices } = await response.json();
+          setSuggestedServices(expandedServices);
+          setSelectedServices(expandedServices); // All selected by default
+          setShowServiceSelector(true);
+
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: Date.now().toString(),
+              text: "I've expanded your services into specific offerings. Uncheck any that don't apply to you, then click 'Confirm Services' to continue.",
+              isBot: true,
+            },
+          ]);
+        } else {
+          throw new Error("Failed to expand services");
+        }
+      } catch (error) {
+        // Fallback - just use what they typed
+        setSuggestedServices(updatedData.services);
+        setSelectedServices(updatedData.services);
+        setShowServiceSelector(true);
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            text: "Please confirm your services below, then click 'Confirm Services' to continue.",
+            isBot: true,
+          },
+        ]);
+      }
+
+      setLoadingServices(false);
+      return; // Don't proceed to next question yet
+    }
 
     // Move to next question or finish
     if (currentQuestion < questions.length - 1) {
@@ -326,8 +433,68 @@ export default function OnboardingPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            {currentQuestion < questions.length && !generatedContent && (
+            {/* Service selector */}
+            {showServiceSelector && (
               <div className="p-4 border-t border-dark-800">
+                <div className="mb-3">
+                  <p className="text-sm text-dark-400 mb-2">
+                    Select the services you offer ({selectedServices.length} selected):
+                  </p>
+                  <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                    {suggestedServices.map((service) => (
+                      <button
+                        key={service}
+                        type="button"
+                        onClick={() => toggleService(service)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                          selectedServices.includes(service)
+                            ? "bg-brand-500 text-white"
+                            : "bg-dark-800 text-dark-400 hover:bg-dark-700"
+                        }`}
+                      >
+                        {selectedServices.includes(service) && (
+                          <Check className="w-3 h-3" />
+                        )}
+                        {service}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={handleConfirmServices}
+                  disabled={selectedServices.length === 0}
+                  className="btn-primary btn-md w-full"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  Confirm Services ({selectedServices.length})
+                </button>
+              </div>
+            )}
+
+            {/* Input form */}
+            {currentQuestion < questions.length && !generatedContent && !showServiceSelector && (
+              <div className="p-4 border-t border-dark-800">
+                {/* Question counter */}
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs text-dark-500">
+                    Question {currentQuestion + 1} of {questions.length}
+                  </span>
+                  <div className="flex gap-1">
+                    {questions.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={`w-2 h-2 rounded-full ${
+                          idx < currentQuestion
+                            ? "bg-brand-500"
+                            : idx === currentQuestion
+                            ? "bg-brand-400"
+                            : "bg-dark-700"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -342,7 +509,7 @@ export default function OnboardingPage() {
                       onChange={(e) => setInput(e.target.value)}
                       placeholder="Type your answer... (be as detailed as you can)"
                       className="input flex-1 min-h-[100px] resize-none"
-                      disabled={loading}
+                      disabled={loading || loadingServices}
                       rows={4}
                     />
                   ) : (
@@ -352,12 +519,12 @@ export default function OnboardingPage() {
                       onChange={(e) => setInput(e.target.value)}
                       placeholder="Type your answer..."
                       className="input flex-1"
-                      disabled={loading}
+                      disabled={loading || loadingServices}
                     />
                   )}
                   <button
                     type="submit"
-                    disabled={!input.trim() || loading}
+                    disabled={!input.trim() || loading || loadingServices}
                     className="btn-primary btn-md self-end"
                   >
                     <Send className="w-4 h-4" />
