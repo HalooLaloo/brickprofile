@@ -26,10 +26,15 @@ interface Message {
 
 interface OnboardingData {
   companyName: string;
+  contractorType: string;
   services: string[];
+  serviceDetails: string;
   experience: string;
+  teamSize: string;
   areas: string[];
   specialties: string;
+  uniqueValue: string;
+  projectExamples: string;
   phone: string;
   email: string;
 }
@@ -46,19 +51,40 @@ interface UploadedPhoto {
 const questions = [
   { key: "companyName", question: "What's your company name?" },
   {
-    key: "services",
-    question:
-      "What services do you offer? (e.g., bathroom renovations, kitchen remodeling, roofing)",
+    key: "contractorType",
+    question: "What type of contractor are you? (e.g., general contractor, roofer, plumber, electrician, bathroom specialist, kitchen fitter)",
   },
-  { key: "experience", question: "How many years of experience do you have?" },
+  {
+    key: "services",
+    question: "List all the services you offer, separated by commas (e.g., full bathroom renovations, tile installation, underfloor heating, walk-in showers)",
+  },
+  {
+    key: "serviceDetails",
+    question: "Describe what a typical project looks like for your main service. What does it include? What materials do you use? What's the process from start to finish?",
+  },
+  {
+    key: "experience",
+    question: "How many years have you been in business? Tell me about your background.",
+  },
+  {
+    key: "teamSize",
+    question: "How big is your team? Do you work alone, with employees, or with subcontractors?",
+  },
   {
     key: "areas",
-    question: "What areas do you serve? (e.g., London, Manchester, Birmingham)",
+    question: "What areas do you serve? List the cities or regions.",
   },
   {
     key: "specialties",
-    question:
-      "What makes your work special? Any certifications or specialties?",
+    question: "What certifications, qualifications, or accreditations do you have? (e.g., Gas Safe, NICEIC, City & Guilds, trade body memberships)",
+  },
+  {
+    key: "uniqueValue",
+    question: "What makes you different from other contractors? Why should customers choose you?",
+  },
+  {
+    key: "projectExamples",
+    question: "Describe 2-3 recent projects you're proud of. What did you do and what was the result?",
   },
   { key: "phone", question: "What's your contact phone number?" },
   { key: "email", question: "What's your business email?" },
@@ -87,10 +113,15 @@ export default function OnboardingPage() {
   const [input, setInput] = useState("");
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     companyName: "",
+    contractorType: "",
     services: [],
+    serviceDetails: "",
     experience: "",
+    teamSize: "",
     areas: [],
     specialties: "",
+    uniqueValue: "",
+    projectExamples: "",
     phone: "",
     email: "",
   });
@@ -189,14 +220,14 @@ export default function OnboardingPage() {
           throw new Error("Failed to generate content");
         }
       } catch (error) {
-        // Fallback content
+        // Fallback content - use the data we have
         const fallbackContent = {
-          headline: `Quality ${updatedData.services[0] || "Contracting"} Services`,
-          aboutText: `With ${updatedData.experience} years of experience, ${updatedData.companyName} provides professional ${updatedData.services.join(", ")} services in ${updatedData.areas.join(", ")}. ${updatedData.specialties}`,
+          headline: `Expert ${updatedData.contractorType || updatedData.services[0] || "Contracting"} Services`,
+          aboutText: `${updatedData.companyName} is a professional ${updatedData.contractorType || 'contracting'} business with ${updatedData.experience} experience serving ${updatedData.areas.join(", ")}.\n\nWe specialise in ${updatedData.services.join(", ")}, bringing expertise and attention to detail to every project.${updatedData.specialties ? ` Our team holds ${updatedData.specialties} certifications.` : ''}\n\n${updatedData.uniqueValue || 'What sets us apart is our commitment to customer satisfaction and quality craftsmanship.'}\n\nContact us today to discuss your project and get a free quote.`,
           serviceDescriptions: Object.fromEntries(
             updatedData.services.map((s) => [
               s,
-              `Professional ${s.toLowerCase()} services tailored to your needs.`,
+              `Our ${s.toLowerCase()} service provides comprehensive solutions tailored to your needs. We handle everything from initial consultation through to completion, using quality materials and proven techniques.`,
             ])
           ),
         };
@@ -304,18 +335,30 @@ export default function OnboardingPage() {
                   }}
                   className="flex gap-2"
                 >
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Type your answer..."
-                    className="input flex-1"
-                    disabled={loading}
-                  />
+                  {/* Use textarea for questions that need longer answers */}
+                  {["serviceDetails", "uniqueValue", "projectExamples"].includes(questions[currentQuestion].key) ? (
+                    <textarea
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="Type your answer... (be as detailed as you can)"
+                      className="input flex-1 min-h-[100px] resize-none"
+                      disabled={loading}
+                      rows={4}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="Type your answer..."
+                      className="input flex-1"
+                      disabled={loading}
+                    />
+                  )}
                   <button
                     type="submit"
                     disabled={!input.trim() || loading}
-                    className="btn-primary btn-md"
+                    className="btn-primary btn-md self-end"
                   >
                     <Send className="w-4 h-4" />
                   </button>

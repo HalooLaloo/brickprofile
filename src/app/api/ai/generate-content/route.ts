@@ -15,22 +15,63 @@ export async function POST(request: Request) {
 
     const { answers } = await request.json();
 
-    const { companyName, services, experience, areas, specialties } = answers;
+    const {
+      companyName,
+      contractorType,
+      services,
+      serviceDetails,
+      experience,
+      teamSize,
+      areas,
+      specialties,
+      uniqueValue,
+      projectExamples
+    } = answers;
 
-    const prompt = `You are a professional copywriter for contractor websites. Generate website content for a contractor with the following details:
+    const prompt = `You are an expert copywriter specializing in contractor and trade business websites. Generate compelling, detailed website content for this contractor.
 
+=== BUSINESS INFORMATION ===
 Company Name: ${companyName}
+Type of Contractor: ${contractorType || "General contractor"}
 Services Offered: ${services.join(", ")}
-Years of Experience: ${experience}
+Typical Project Details: ${serviceDetails || "Not provided"}
+Experience: ${experience}
+Team Size: ${teamSize || "Not specified"}
 Service Areas: ${areas.join(", ")}
-Specialties/Certifications: ${specialties || "Not specified"}
+Certifications/Qualifications: ${specialties || "Not specified"}
+Unique Value Proposition: ${uniqueValue || "Not specified"}
+Recent Project Examples: ${projectExamples || "Not provided"}
+
+=== CONTENT REQUIREMENTS ===
 
 Generate the following in JSON format:
-1. "headline": A compelling headline for the homepage (max 10 words)
-2. "aboutText": 2-3 paragraphs about the company (professional, trustworthy tone)
-3. "serviceDescriptions": An object with each service as a key and a 1-2 sentence description as the value
 
-Keep the tone professional but approachable. Focus on quality, reliability, and customer satisfaction.`;
+1. "headline": A powerful, specific headline (6-10 words) that:
+   - Mentions the main service or trade
+   - Includes a benefit or differentiator
+   - Sounds professional and trustworthy
+   - Example: "Expert Bathroom Renovations That Transform Your Home"
+
+2. "aboutText": Write 3-4 substantial paragraphs (total 200-300 words) that:
+   - First paragraph: Strong opening about who they are, what they specialize in, and their main value
+   - Second paragraph: Experience, qualifications, and what makes them professional
+   - Third paragraph: Their approach to work, customer service philosophy, and attention to detail
+   - Fourth paragraph: Service areas and call to action
+   - Use specific details from the input
+   - Sound authentic and trustworthy, not generic
+
+3. "serviceDescriptions": For EACH service listed, write a detailed description (3-5 sentences, 50-80 words each) that includes:
+   - What the service involves (specific tasks and scope)
+   - Materials, techniques, or methods used (if applicable)
+   - Benefits to the customer
+   - Why choose this company for this service
+   - Make each description unique and informative, NOT generic "professional X services"
+
+IMPORTANT:
+- Be specific and detailed, use the information provided
+- Avoid generic phrases like "professional services" or "quality workmanship" without context
+- Each service description should read like it was written by someone who actually does this work
+- Use British English spelling (colour, specialise, etc.)`;
 
     const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
@@ -58,12 +99,20 @@ Keep the tone professional but approachable. Focus on quality, reliability, and 
   } catch (error) {
     console.error("Error generating content:", error);
 
-    // Return fallback content
+    // Return fallback content - better than before but still generic
+    const { answers } = await request.json().catch(() => ({ answers: {} }));
+    const fallbackServices = answers?.services || [];
+
     return NextResponse.json({
-      headline: "Quality Contracting Services You Can Trust",
+      headline: `Expert ${answers?.contractorType || 'Contracting'} Services You Can Trust`,
       aboutText:
-        "We are a professional contracting company dedicated to delivering exceptional results on every project. With years of experience in the industry, our team of skilled professionals brings expertise and attention to detail to every job.\n\nOur commitment to quality craftsmanship and customer satisfaction has made us a trusted name in the community. We take pride in our work and stand behind everything we do.\n\nContact us today to discuss your project and discover why so many homeowners choose us for their renovation and construction needs.",
-      serviceDescriptions: {},
+        `${answers?.companyName || 'Our company'} is a professional ${answers?.contractorType || 'contracting'} business with ${answers?.experience || 'years of'} experience serving ${answers?.areas?.join(', ') || 'the local area'}.\n\nWe specialise in ${fallbackServices.join(', ') || 'a range of services'}, bringing expertise and attention to detail to every project. ${answers?.specialties ? `Our team holds ${answers.specialties} certifications, ensuring quality workmanship on every job.` : ''}\n\n${answers?.uniqueValue || 'What sets us apart is our commitment to customer satisfaction and quality craftsmanship.'}\n\nContact us today to discuss your project and get a free quote.`,
+      serviceDescriptions: Object.fromEntries(
+        fallbackServices.map((s: string) => [
+          s,
+          `Our ${s.toLowerCase()} service provides comprehensive solutions tailored to your needs. We handle everything from initial consultation through to completion, using quality materials and proven techniques to deliver results that exceed expectations.`
+        ])
+      ),
     });
   }
 }
