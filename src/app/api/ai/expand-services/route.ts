@@ -7,6 +7,8 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const { contractorType, services } = body;
 
+  console.log("Expand services request:", { contractorType, services });
+
   try {
     const supabase = await createClient();
     const {
@@ -14,60 +16,56 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      console.log("Unauthorized - no user");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     if (!services || !Array.isArray(services) || services.length === 0) {
+      console.log("No services provided");
       return NextResponse.json(
         { error: "Services are required" },
         { status: 400 }
       );
     }
 
-    const prompt = `You are an expert in the construction and contracting industry. A ${contractorType || "contractor"} has listed these services: ${services.join(", ")}.
+    const prompt = `A ${contractorType || "contractor"} offers: ${services.join(", ")}
 
-Your task is to expand these services into specific, detailed sub-services that customers would actually search for and understand.
+Break down each service into specific tasks a customer would understand and search for.
 
-For example:
-- "Bathroom renovation" should expand to: Tile installation, Plumbing fixtures, Shower installation, Bathtub installation, Vanity installation, Bathroom flooring, Waterproofing, Bathroom lighting, Mirror installation, Heated towel rails
-- "Kitchen fitting" should expand to: Kitchen cabinet installation, Worktop fitting, Sink installation, Tap fitting, Kitchen tiling, Appliance installation, Kitchen lighting, Splashback installation, Kitchen flooring
-- "Roofing" should expand to: Roof repairs, Flat roofing, Pitched roofing, Roof tile replacement, Guttering, Fascias and soffits, Roof insulation, Chimney repairs, Skylight installation
+Example input: "Bathroom renovation"
+Example output: Bathroom renovation, Tile installation, Plumbing fixtures, Shower installation, Bathtub fitting, Vanity units, Bathroom flooring, Waterproofing, Bathroom electrics, Underfloor heating
 
-Rules:
-1. Include ALL the original services the user mentioned
-2. Add 3-8 specific sub-services for each general service
-3. Keep service names short (2-4 words max)
-4. Use common terms customers would search for
-5. Don't repeat services
-6. Maximum 25 total services
-7. Sort alphabetically
+Example input: "Kitchen fitting"
+Example output: Kitchen fitting, Cabinet installation, Worktop fitting, Sink & tap installation, Kitchen tiling, Appliance fitting, Kitchen electrics, Splashback installation
 
-Return ONLY a JSON object with this format:
-{
-  "expandedServices": ["Service 1", "Service 2", "Service 3", ...]
-}`;
+For the services listed above, generate 15-25 specific services total. Include the original services plus detailed sub-tasks for each.
+
+Return JSON: {"expandedServices": ["Service 1", "Service 2", ...]}`;
+
+    console.log("Calling OpenAI with prompt length:", prompt.length);
 
     const completion = await getOpenAI().chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content:
-            "You are a construction industry expert. Always respond with valid JSON only, no markdown formatting.",
+          content: "You expand contractor services into specific sub-services. Return only valid JSON.",
         },
         { role: "user", content: prompt },
       ],
-      temperature: 0.7,
+      temperature: 0.8,
       response_format: { type: "json_object" },
     });
 
     const content = completion.choices[0]?.message?.content;
+    console.log("OpenAI response:", content);
 
     if (!content) {
       throw new Error("No content generated");
     }
 
     const parsed = JSON.parse(content);
+    console.log("Parsed services count:", parsed.expandedServices?.length);
 
     return NextResponse.json(parsed);
   } catch (error) {
