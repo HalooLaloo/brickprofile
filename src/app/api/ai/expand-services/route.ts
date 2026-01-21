@@ -3,6 +3,10 @@ import { getOpenAI } from "@/lib/openai";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
+  // Parse body first so we can use it in catch block
+  const body = await request.json().catch(() => ({}));
+  const { contractorType, services } = body;
+
   try {
     const supabase = await createClient();
     const {
@@ -12,8 +16,6 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const { contractorType, services } = await request.json();
 
     if (!services || !Array.isArray(services) || services.length === 0) {
       return NextResponse.json(
@@ -72,8 +74,6 @@ Return ONLY a JSON object with this format:
     console.error("Error expanding services:", error);
 
     // Return original services as fallback
-    const { services } = await request.json().catch(() => ({ services: [] }));
-
     return NextResponse.json({
       expandedServices: services || [],
     });
