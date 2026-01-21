@@ -157,7 +157,7 @@ export function SettingsForm({ user, profile, site }: SettingsFormProps) {
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={`${site.slug}.pagesnap.com`}
+                  value={`${site.slug}.brickprofile.com`}
                   disabled
                   className="input flex-1 opacity-60"
                 />

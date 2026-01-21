@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Menu,
   X,
-  Zap,
+  BrickWall,
   LogOut,
   ExternalLink,
   PenSquare,
@@ -48,9 +48,9 @@ export function TopBar({ user, site }: TopBarProps) {
       <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between h-16 px-4 border-b border-dark-800 bg-dark-950">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" />
+            <BrickWall className="w-5 h-5 text-white" />
           </div>
-          <span className="text-lg font-bold">PageSnap</span>
+          <span className="text-lg font-bold">BrickProfile</span>
         </div>
 
         <button

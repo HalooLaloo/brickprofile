@@ -188,8 +188,8 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
       <footer className="py-8 px-6 border-t border-dark-800/50">
         <div className="max-w-3xl mx-auto flex items-center justify-between text-sm text-dark-600">
           <p>&copy; {new Date().getFullYear()} {site.company_name}</p>
-          <a href="https://pagesnap.com" className="hover:text-dark-400">
-            PageSnap
+          <a href="https://brickprofile.com" className="hover:text-dark-400">
+            BrickProfile
           </a>
         </div>
       </footer>

@@ -312,8 +312,8 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
         <p>&copy; {new Date().getFullYear()} {site.company_name}. All rights reserved.</p>
         <p className="mt-2">
           Powered by{" "}
-          <a href="https://pagesnap.com" className="hover:text-dark-300">
-            PageSnap
+          <a href="https://brickprofile.com" className="hover:text-dark-300">
+            BrickProfile
           </a>
         </p>
       </footer>

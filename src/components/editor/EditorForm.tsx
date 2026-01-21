@@ -439,7 +439,7 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
             <div>
               <p className="font-medium">Publish Website</p>
               <p className="text-sm text-dark-400">
-                Make your portfolio visible at {site.slug}.pagesnap.com
+                Make your portfolio visible at {site.slug}.brickprofile.com
               </p>
             </div>
           </label>

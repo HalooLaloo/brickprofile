@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const features = {
   free: [
     "Up to 20 portfolio photos",
-    "Free subdomain (company.pagesnap.com)",
+    "Free subdomain (company.brickprofile.com)",
     "All 4 templates",
     "AI content generation",
     "AI photo categorization",
@@ -25,7 +25,7 @@ const features = {
     "Unlimited testimonials",
     "QuoteSnap integration",
     "Full analytics dashboard",
-    "Remove PageSnap branding",
+    "Remove BrickProfile branding",
     "Priority in directory",
   ],
 };

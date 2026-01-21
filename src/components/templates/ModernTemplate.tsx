@@ -303,8 +303,8 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
       <footer className="py-8 px-6 border-t border-dark-800/50 text-center text-sm text-dark-500">
         <p>
           &copy; {new Date().getFullYear()} {site.company_name} • Powered by{" "}
-          <a href="https://pagesnap.com" className="hover:text-white transition-colors">
-            PageSnap
+          <a href="https://brickprofile.com" className="hover:text-white transition-colors">
+            BrickProfile
           </a>
         </p>
       </footer>

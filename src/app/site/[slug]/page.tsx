@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!site) {
     return {
-      title: "Site Not Found - PageSnap",
+      title: "Site Not Found - BrickProfile",
     };
   }
 

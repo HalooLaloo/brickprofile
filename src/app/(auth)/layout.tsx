@@ -14,7 +14,7 @@ export default function AuthLayout({
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
             <Zap className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold">PageSnap</span>
+          <span className="text-xl font-bold">BrickProfile</span>
         </Link>
       </header>
 
@@ -25,7 +25,7 @@ export default function AuthLayout({
 
       {/* Footer */}
       <footer className="p-4 text-center text-sm text-dark-500">
-        Part of the Snap Ecosystem: SiteSnap • QuoteSnap • PageSnap
+        Part of the Snap Ecosystem: SiteSnap • QuoteSnap • BrickProfile
       </footer>
     </div>
   );

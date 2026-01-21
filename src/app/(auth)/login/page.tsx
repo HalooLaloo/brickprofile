@@ -42,7 +42,7 @@ function LoginForm() {
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
-        <p className="text-dark-400">Sign in to your PageSnap account</p>
+        <p className="text-dark-400">Sign in to your BrickProfile account</p>
       </div>
 
       <div className="card p-6">

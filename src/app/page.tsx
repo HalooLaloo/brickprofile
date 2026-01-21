@@ -58,7 +58,7 @@ const pricingPlans = [
     description: "Perfect for getting started",
     features: [
       "Up to 20 portfolio photos",
-      "Free subdomain (company.pagesnap.com)",
+      "Free subdomain (company.brickprofile.com)",
       "All 4 templates",
       "AI content generation",
       "AI photo categorization",
@@ -83,7 +83,7 @@ const pricingPlans = [
       "Unlimited testimonials",
       "QuoteSnap integration",
       "Full analytics dashboard",
-      "Remove PageSnap branding",
+      "Remove BrickProfile branding",
       "Priority in directory",
     ],
     cta: "Start Pro Trial",
@@ -102,7 +102,7 @@ export default function LandingPage() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold">PageSnap</span>
+              <span className="text-xl font-bold">BrickProfile</span>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/login" className="btn-ghost btn-md">
@@ -291,7 +291,7 @@ export default function LandingPage() {
             Ready to Showcase Your Work?
           </h2>
           <p className="text-dark-400 mb-8">
-            Join thousands of contractors who use PageSnap to attract new
+            Join thousands of contractors who use BrickProfile to attract new
             clients and grow their business.
           </p>
           <Link href="/register" className="btn-primary btn-lg">
@@ -309,13 +309,13 @@ export default function LandingPage() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold">PageSnap</span>
+              <span className="text-lg font-bold">BrickProfile</span>
             </div>
             <p className="text-dark-500 text-sm">
-              Part of the Snap Ecosystem: SiteSnap • QuoteSnap • PageSnap
+              Part of the Snap Ecosystem: SiteSnap • QuoteSnap • BrickProfile
             </p>
             <p className="text-dark-500 text-sm">
-              &copy; {new Date().getFullYear()} PageSnap. All rights reserved.
+              &copy; {new Date().getFullYear()} BrickProfile. All rights reserved.
             </p>
           </div>
         </div>

@@ -69,19 +69,19 @@ export async function POST(request: Request) {
     if (resend && profile?.plan === "pro" && profile?.email) {
       try {
         await resend.emails.send({
-          from: "PageSnap <notifications@pagesnap.com>",
+          from: "BrickProfile <notifications@brickprofile.com>",
           to: profile.email,
           subject: `New contact from ${name} - ${site.company_name}`,
           html: `
             <h2>New Contact Request</h2>
-            <p>Someone contacted you through your PageSnap portfolio!</p>
+            <p>Someone contacted you through your BrickProfile portfolio!</p>
             <hr>
             <p><strong>Name:</strong> ${name}</p>
             ${email ? `<p><strong>Email:</strong> ${email}</p>` : ""}
             ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ""}
             ${message ? `<p><strong>Message:</strong></p><p>${message}</p>` : ""}
             <hr>
-            <p><a href="https://pagesnap-gamma.vercel.app/leads">View all leads in dashboard</a></p>
+            <p><a href="https://brickprofile-gamma.vercel.app/leads">View all leads in dashboard</a></p>
           `,
         });
       } catch (emailError) {
