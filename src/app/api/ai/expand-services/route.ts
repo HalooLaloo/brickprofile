@@ -7,7 +7,13 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const { contractorType, services } = body;
 
-  console.log("Expand services request:", { contractorType, services });
+  const apiKey = process.env.OPENAI_API_KEY;
+  console.log("Expand services request:", {
+    contractorType,
+    services,
+    hasApiKey: !!apiKey,
+    apiKeyPrefix: apiKey ? apiKey.substring(0, 10) + "..." : "MISSING"
+  });
 
   try {
     const supabase = await createClient();
@@ -38,14 +44,15 @@ Example output: Bathroom renovation, Tile installation, Plumbing fixtures, Showe
 Example input: "Kitchen fitting"
 Example output: Kitchen fitting, Cabinet installation, Worktop fitting, Sink & tap installation, Kitchen tiling, Appliance fitting, Kitchen electrics, Splashback installation
 
-For the services listed above, generate 15-25 specific services total. Include the original services plus detailed sub-tasks for each.
+For the services listed above, generate 10-15 specific services total (not more!). Include the original services plus the most important sub-tasks.
 
 Return JSON: {"expandedServices": ["Service 1", "Service 2", ...]}`;
 
     console.log("Calling OpenAI with prompt length:", prompt.length);
+    console.log("OpenAI client:", !!getOpenAI());
 
     const completion = await getOpenAI().chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -68,12 +75,21 @@ Return JSON: {"expandedServices": ["Service 1", "Service 2", ...]}`;
     console.log("Parsed services count:", parsed.expandedServices?.length);
 
     return NextResponse.json(parsed);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error expanding services:", error);
 
-    // Return original services as fallback
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    // Return error info for debugging
     return NextResponse.json({
       expandedServices: services || [],
+      error: error?.message || "Unknown error",
+      errorDetails: error?.toString(),
+      debug: {
+        hasApiKey: !!apiKey,
+        apiKeyLength: apiKey?.length || 0,
+        apiKeyPrefix: apiKey ? apiKey.substring(0, 8) : "NONE",
+      }
     });
   }
 }

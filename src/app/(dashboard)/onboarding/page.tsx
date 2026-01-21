@@ -14,7 +14,10 @@ import {
   Check,
   Send,
   X,
+  AlertCircle,
+  Edit3,
 } from "lucide-react";
+import Link from "next/link";
 import type { Site } from "@/lib/types";
 
 const STEPS = ["Tell us about you", "Upload photos", "Choose template", "Publish"];
@@ -35,7 +38,6 @@ interface OnboardingData {
   areas: string[];
   specialties: string;
   uniqueValue: string;
-  projectExamples: string;
   phone: string;
   email: string;
 }
@@ -83,10 +85,6 @@ const questions = [
     key: "uniqueValue",
     question: "What makes you different from other contractors? Why should customers choose you?",
   },
-  {
-    key: "projectExamples",
-    question: "Describe 2-3 recent projects you're proud of. What did you do and what was the result?",
-  },
   { key: "phone", question: "What's your contact phone number?" },
   { key: "email", question: "What's your business email?" },
 ];
@@ -96,6 +94,28 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [existingSite, setExistingSite] = useState<{ id: string; company_name: string; slug: string } | null>(null);
+  const [checkingExisting, setCheckingExisting] = useState(true);
+
+  // Check if user already has a site
+  useEffect(() => {
+    const checkExistingSite = async () => {
+      try {
+        const response = await fetch("/api/sites");
+        if (response.ok) {
+          const { sites } = await response.json();
+          if (sites && sites.length > 0) {
+            setExistingSite(sites[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking existing sites:", error);
+      } finally {
+        setCheckingExisting(false);
+      }
+    };
+    checkExistingSite();
+  }, []);
 
   // Step 1: Chat state
   const [messages, setMessages] = useState<Message[]>([
@@ -122,7 +142,6 @@ export default function OnboardingPage() {
     areas: [],
     specialties: "",
     uniqueValue: "",
-    projectExamples: "",
     phone: "",
     email: "",
   });
@@ -232,6 +251,11 @@ export default function OnboardingPage() {
       setLoadingServices(true);
 
       try {
+        console.log("Calling expand-services with:", {
+          contractorType: updatedData.contractorType,
+          services: updatedData.services,
+        });
+
         const response = await fetch("/api/ai/expand-services", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -241,24 +265,28 @@ export default function OnboardingPage() {
           }),
         });
 
-        if (response.ok) {
-          const { expandedServices } = await response.json();
-          setSuggestedServices(expandedServices);
-          setSelectedServices(expandedServices); // All selected by default
+        const data = await response.json();
+        console.log("API response:", data);
+
+        if (response.ok && data.expandedServices && data.expandedServices.length > 0) {
+          setSuggestedServices(data.expandedServices);
+          setSelectedServices(data.expandedServices); // All selected by default
           setShowServiceSelector(true);
 
           setMessages((prev) => [
             ...prev,
             {
               id: Date.now().toString(),
-              text: "I've expanded your services into specific offerings. Uncheck any that don't apply to you, then click 'Confirm Services' to continue.",
+              text: `I've expanded your services into ${data.expandedServices.length} specific offerings. Uncheck any that don't apply to you, then click 'Confirm Services' to continue.`,
               isBot: true,
             },
           ]);
         } else {
-          throw new Error("Failed to expand services");
+          console.log("API returned error or empty:", data);
+          throw new Error(data.error || "Failed to expand services");
         }
       } catch (error) {
+        console.error("Expand services error:", error);
         // Fallback - just use what they typed
         setSuggestedServices(updatedData.services);
         setSelectedServices(updatedData.services);
@@ -404,6 +432,49 @@ export default function OnboardingPage() {
     }
   };
 
+  // Show loading while checking for existing site
+  if (checkingExisting) {
+    return (
+      <div className="max-w-3xl mx-auto flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
+      </div>
+    );
+  }
+
+  // Show notice if user already has a site
+  if (existingSite) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="card p-8">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-full bg-amber-500/10">
+              <AlertCircle className="w-6 h-6 text-amber-500" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold mb-2">You already have a portfolio</h2>
+              <p className="text-dark-400 mb-4">
+                You have an existing portfolio for <strong className="text-white">{existingSite.company_name}</strong>.
+                On the free plan, you can have 1 portfolio. You can edit your existing site or upgrade to Pro for multiple portfolios.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/editor" className="btn-primary btn-md">
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit Your Portfolio
+                </Link>
+                <Link href={`/site/${existingSite.slug}`} target="_blank" className="btn-secondary btn-md">
+                  View Live Site
+                </Link>
+                <Link href="/upgrade" className="btn-ghost btn-md text-brand-400">
+                  Upgrade to Pro
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto">
       {/* Step indicator */}
@@ -503,7 +574,7 @@ export default function OnboardingPage() {
                   className="flex gap-2"
                 >
                   {/* Use textarea for questions that need longer answers */}
-                  {["serviceDetails", "uniqueValue", "projectExamples"].includes(questions[currentQuestion].key) ? (
+                  {["serviceDetails", "uniqueValue"].includes(questions[currentQuestion].key) ? (
                     <textarea
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
