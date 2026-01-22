@@ -402,7 +402,7 @@ export default function BusinessCardsPage() {
               Card Type
             </h2>
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => setCardSide("single")}
+              <button onClick={() => { setCardSide("single"); setShowingBack(false); }}
                 className={cn("p-2 rounded-lg border-2 transition-all",
                   cardSide === "single" ? "border-brand-500 bg-brand-500/10" : "border-dark-700 hover:border-dark-600")}>
                 <p className="font-medium text-sm">Single-sided</p>
