@@ -48,7 +48,7 @@ const templates: { id: Template; name: string; description: string }[] = [
 const accentColorPresets = [
   { name: "Blue", value: "#3b82f6" },
   { name: "Green", value: "#22c55e" },
-  { name: "Orange", value: "#f97316" },
+  { name: "White", value: "#ffffff" },
   { name: "Red", value: "#ef4444" },
   { name: "Purple", value: "#a855f7" },
   { name: "Teal", value: "#14b8a6" },
@@ -294,7 +294,7 @@ export default function BusinessCardsPage() {
                   title={color.name}
                 >
                   {accentColor === color.value && !customAccentColor && (
-                    <Check className="w-3 h-3 text-white absolute inset-0 m-auto" />
+                    <Check className={cn("w-3 h-3 absolute inset-0 m-auto", color.value === "#ffffff" ? "text-gray-800" : "text-white")} />
                   )}
                 </button>
               ))}
@@ -493,31 +493,32 @@ export default function BusinessCardsPage() {
                     </div>
                   )}
 
-                  {/* CORPORATE - Bottom accent bar */}
+                  {/* CORPORATE - Header bar with company name */}
                   {template === "corporate" && (
                     <div className="h-full flex flex-col">
-                      <div className="flex-1 p-5 flex">
-                        <div className="flex-1">
-                          <div className="flex items-start gap-3 mb-3">
-                            {logoUrl && <img src={logoUrl} alt="Logo" className="w-12 h-12 object-contain" />}
-                            <div>
-                              <p className="text-lg font-bold leading-tight">{companyName || "Company Name"}</p>
-                              {services && <p className="text-[10px] mt-0.5" style={{ color: activeAccentColor }}>{services}</p>}
+                      <div className="px-5 py-3 flex items-center justify-between" style={{ backgroundColor: activeAccentColor }}>
+                        <p className="text-base font-bold text-white">{companyName || "Company Name"}</p>
+                        {logoUrl && <img src={logoUrl} alt="Logo" className="w-8 h-8 object-contain" />}
+                      </div>
+                      <div className="flex-1 p-4 flex flex-col justify-between">
+                        {services && (
+                          <p className="text-[10px] font-medium" style={{ color: activeAccentColor }}>{services}</p>
+                        )}
+                        <div className="flex justify-between items-end">
+                          <div>
+                            {yourName && <p className="font-semibold text-sm mb-2">{yourName}</p>}
+                            <div className="space-y-1 text-xs" style={{ color: secondaryTextColor }}>
+                              {phone && <p className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: activeAccentColor }} />{phone}</p>}
+                              {email && <p className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: activeAccentColor }} />{email}</p>}
+                              {website && <p className="flex items-center gap-1.5"><Globe className="w-3 h-3" style={{ color: activeAccentColor }} />{website}</p>}
+                              {address && <p className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: activeAccentColor }} />{address}</p>}
                             </div>
                           </div>
-                          {yourName && <p className="font-medium text-sm mb-3">{yourName}</p>}
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs" style={{ color: secondaryTextColor }}>
-                            {phone && <p className="flex items-center gap-1.5"><Phone className="w-3 h-3" style={{ color: activeAccentColor }} />{phone}</p>}
-                            {email && <p className="flex items-center gap-1.5"><Mail className="w-3 h-3" style={{ color: activeAccentColor }} />{email}</p>}
-                            {website && <p className="flex items-center gap-1.5"><Globe className="w-3 h-3" style={{ color: activeAccentColor }} />{website}</p>}
-                            {address && <p className="flex items-center gap-1.5"><MapPin className="w-3 h-3" style={{ color: activeAccentColor }} />{address}</p>}
-                          </div>
+                          {cardSide === "single" && qrCodeUrl && (
+                            <img src={qrCodeUrl} alt="QR" className="w-14 h-14" />
+                          )}
                         </div>
-                        {cardSide === "single" && qrCodeUrl && (
-                          <img src={qrCodeUrl} alt="QR" className="w-16 h-16 self-end" />
-                        )}
                       </div>
-                      <div className="h-2" style={{ backgroundColor: activeAccentColor }} />
                     </div>
                   )}
 
