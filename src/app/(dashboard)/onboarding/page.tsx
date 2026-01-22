@@ -251,11 +251,6 @@ export default function OnboardingPage() {
       setLoadingServices(true);
 
       try {
-        console.log("Calling expand-services with:", {
-          contractorType: updatedData.contractorType,
-          services: updatedData.services,
-        });
-
         const response = await fetch("/api/ai/expand-services", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -266,7 +261,6 @@ export default function OnboardingPage() {
         });
 
         const data = await response.json();
-        console.log("API response:", data);
 
         if (response.ok && data.expandedServices && data.expandedServices.length > 0) {
           setSuggestedServices(data.expandedServices);
@@ -282,7 +276,6 @@ export default function OnboardingPage() {
             },
           ]);
         } else {
-          console.log("API returned error or empty:", data);
           throw new Error(data.error || "Failed to expand services");
         }
       } catch (error) {

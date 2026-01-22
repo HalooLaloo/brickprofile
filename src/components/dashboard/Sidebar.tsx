@@ -235,7 +235,7 @@ export function Sidebar({ user, profile, sites, activeSite, canCreateMore, maxSi
             <Crown className="w-5 h-5 text-brand-400" />
             <div>
               <p className="text-sm font-medium">Upgrade to Pro</p>
-              <p className="text-xs text-dark-400">$9.99/month</p>
+              <p className="text-xs text-dark-400">$19.99/month</p>
             </div>
           </Link>
         </div>

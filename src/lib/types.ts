@@ -162,6 +162,7 @@ export const PLAN_LIMITS = {
     fullAnalytics: false,
     emailNotifications: false,
     googleReviewsLink: false,
+    socialContentGenerator: false,
   },
   pro: {
     maxPhotos: 1000,
@@ -172,5 +173,14 @@ export const PLAN_LIMITS = {
     fullAnalytics: true,
     emailNotifications: true,
     googleReviewsLink: true,
+    socialContentGenerator: true,
+  },
+} as const;
+
+// Prices (for display)
+export const PRICES = {
+  pro: {
+    monthly: 19.99,
+    currency: "USD",
   },
 } as const;

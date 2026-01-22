@@ -7,26 +7,26 @@ import { cn } from "@/lib/utils";
 
 const features = {
   free: [
-    "Up to 20 portfolio photos",
-    "Free subdomain (company.brickprofile.com)",
+    "Professional portfolio website",
+    "Free subdomain (you.brickprofile.com)",
+    "Up to 10 portfolio photos",
     "All 4 templates",
     "AI content generation",
     "AI photo categorization",
-    "5 testimonials",
-    "QuoteSnap integration",
-    "Basic analytics",
+    "Contact form with email leads",
+    "5 customer reviews",
   ],
   pro: [
+    "Everything in Free, plus:",
     "Unlimited portfolio photos",
     "Custom domain support",
-    "All 4 templates",
-    "AI content generation",
-    "AI photo categorization",
-    "Unlimited testimonials",
-    "QuoteSnap integration",
+    "Social Media Content Generator",
     "Full analytics dashboard",
+    "Unlimited customer reviews",
+    "Google Reviews integration",
+    "Email notifications for leads",
     "Remove BrickProfile branding",
-    "Priority in directory",
+    "Priority support",
   ],
 };
 
@@ -107,11 +107,11 @@ export default function UpgradePage() {
           <div className="mb-6">
             <h3 className="text-xl font-semibold mb-1">Pro</h3>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold">$9.99</span>
+              <span className="text-3xl font-bold">$19.99</span>
               <span className="text-dark-400">/month</span>
             </div>
             <p className="text-sm text-dark-400 mt-1">
-              For growing businesses
+              For serious contractors
             </p>
           </div>
 

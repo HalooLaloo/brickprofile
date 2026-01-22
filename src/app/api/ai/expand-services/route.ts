@@ -3,17 +3,8 @@ import { getOpenAI } from "@/lib/openai";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
-  // Parse body first so we can use it in catch block
   const body = await request.json().catch(() => ({}));
   const { contractorType, services } = body;
-
-  const apiKey = process.env.OPENAI_API_KEY;
-  console.log("Expand services request:", {
-    contractorType,
-    services,
-    hasApiKey: !!apiKey,
-    apiKeyPrefix: apiKey ? apiKey.substring(0, 10) + "..." : "MISSING"
-  });
 
   try {
     const supabase = await createClient();
@@ -22,12 +13,10 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.log("Unauthorized - no user");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     if (!services || !Array.isArray(services) || services.length === 0) {
-      console.log("No services provided");
       return NextResponse.json(
         { error: "Services are required" },
         { status: 400 }
@@ -48,9 +37,6 @@ For the services listed above, generate 10-15 specific services total (not more!
 
 Return JSON: {"expandedServices": ["Service 1", "Service 2", ...]}`;
 
-    console.log("Calling OpenAI with prompt length:", prompt.length);
-    console.log("OpenAI client:", !!getOpenAI());
-
     const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -65,31 +51,21 @@ Return JSON: {"expandedServices": ["Service 1", "Service 2", ...]}`;
     });
 
     const content = completion.choices[0]?.message?.content;
-    console.log("OpenAI response:", content);
 
     if (!content) {
       throw new Error("No content generated");
     }
 
     const parsed = JSON.parse(content);
-    console.log("Parsed services count:", parsed.expandedServices?.length);
 
     return NextResponse.json(parsed);
   } catch (error: any) {
     console.error("Error expanding services:", error);
 
-    const apiKey = process.env.OPENAI_API_KEY;
-
-    // Return error info for debugging
+    // Fallback to original services on error
     return NextResponse.json({
       expandedServices: services || [],
-      error: error?.message || "Unknown error",
-      errorDetails: error?.toString(),
-      debug: {
-        hasApiKey: !!apiKey,
-        apiKeyLength: apiKey?.length || 0,
-        apiKeyPrefix: apiKey ? apiKey.substring(0, 8) : "NONE",
-      }
+      error: error?.message || "Failed to expand services",
     });
   }
 }

@@ -4,6 +4,7 @@ import { ClassicTemplate } from "@/components/templates/ClassicTemplate";
 import { ModernTemplate } from "@/components/templates/ModernTemplate";
 import { BoldTemplate } from "@/components/templates/BoldTemplate";
 import { MinimalTemplate } from "@/components/templates/MinimalTemplate";
+import { DEMO_SITE, DEMO_PHOTOS, DEMO_REVIEWS } from "@/lib/demo-data";
 import type { Site, Photo, Review } from "@/lib/types";
 import type { Metadata } from "next";
 
@@ -13,6 +14,22 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+
+  // Handle demo site
+  if (slug === "demo") {
+    return {
+      title: `${DEMO_SITE.company_name} | Professional Portfolio`,
+      description: DEMO_SITE.headline || "Professional contractor portfolio",
+      openGraph: {
+        title: DEMO_SITE.company_name,
+        description: DEMO_SITE.headline || "Professional contractor portfolio",
+        siteName: "BrickProfile",
+        type: "website",
+        images: [{ url: DEMO_PHOTOS[0].url, width: 1200, height: 630 }],
+      },
+    };
+  }
+
   const supabase = await createClient();
 
   const { data: site } = await supabase
@@ -66,6 +83,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PortfolioSitePage({ params }: Props) {
   const { slug } = await params;
+
+  // Handle demo site with static data
+  if (slug === "demo") {
+    const templateProps = {
+      site: DEMO_SITE,
+      photos: DEMO_PHOTOS,
+      reviews: DEMO_REVIEWS,
+      isPreview: true,
+    };
+
+    // Demo uses modern template
+    return <ModernTemplate {...templateProps} />;
+  }
+
   const supabase = await createClient();
 
   // Fetch site data
