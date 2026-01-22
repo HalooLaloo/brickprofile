@@ -207,21 +207,42 @@ export default function BusinessCardsPage() {
         format: [85, 55],
       });
 
-      const frontCanvas = await html2canvas(frontCardRef.current, {
+      // Temporarily make front card fully visible for capture
+      const frontEl = frontCardRef.current;
+      const frontOriginalStyle = frontEl.style.cssText;
+      frontEl.style.opacity = "1";
+      frontEl.style.zIndex = "10";
+
+      const frontCanvas = await html2canvas(frontEl, {
         scale: 3,
-        backgroundColor: null,
+        backgroundColor: activeBgColor,
         useCORS: true,
       });
+
+      // Restore front card style
+      frontEl.style.cssText = frontOriginalStyle;
+
       const frontImgData = frontCanvas.toDataURL("image/png");
       pdf.addImage(frontImgData, "PNG", 0, 0, 85, 55);
 
       if (cardSide === "double" && backCardRef.current) {
         pdf.addPage([85, 55], "landscape");
-        const backCanvas = await html2canvas(backCardRef.current, {
+
+        // Temporarily make back card fully visible for capture
+        const backEl = backCardRef.current;
+        const backOriginalStyle = backEl.style.cssText;
+        backEl.style.opacity = "1";
+        backEl.style.zIndex = "10";
+
+        const backCanvas = await html2canvas(backEl, {
           scale: 3,
-          backgroundColor: null,
+          backgroundColor: activeBgColor,
           useCORS: true,
         });
+
+        // Restore back card style
+        backEl.style.cssText = backOriginalStyle;
+
         const backImgData = backCanvas.toDataURL("image/png");
         pdf.addImage(backImgData, "PNG", 0, 0, 85, 55);
       }
@@ -509,11 +530,11 @@ export default function BusinessCardsPage() {
             </div>
 
             <div className="bg-dark-900 rounded-lg p-6 flex items-center justify-center min-h-[300px]">
-              {/* Front Card */}
-              <div className={cn(!showingBack ? "block" : "hidden")}>
+              <div className="relative" style={{ width: "360px", height: "210px" }}>
+                {/* Front Card */}
                 <div
                   ref={frontCardRef}
-                  className="rounded-lg shadow-2xl overflow-hidden"
+                  className={cn("rounded-lg shadow-2xl overflow-hidden absolute inset-0 transition-opacity", !showingBack ? "opacity-100 z-10" : "opacity-0 z-0")}
                   style={{ width: "360px", height: "210px", backgroundColor: activeBgColor, color: activeTextColor }}
                 >
                   {/* EXECUTIVE - Two column with sidebar */}
@@ -630,14 +651,12 @@ export default function BusinessCardsPage() {
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Back Card */}
-              {cardSide === "double" && (
-                <div className={cn(showingBack ? "block" : "hidden")}>
+                {/* Back Card */}
+                {cardSide === "double" && (
                   <div
                     ref={backCardRef}
-                    className="rounded-lg shadow-2xl overflow-hidden"
+                    className={cn("rounded-lg shadow-2xl overflow-hidden absolute inset-0 transition-opacity", showingBack ? "opacity-100 z-10" : "opacity-0 z-0")}
                     style={{ width: "360px", height: "210px", backgroundColor: activeBgColor, color: activeTextColor }}
                   >
                     <div className="h-full flex flex-col items-center justify-center p-6 text-center">
@@ -651,8 +670,8 @@ export default function BusinessCardsPage() {
                       </p>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             <p className="text-xs text-dark-500 text-center mt-3">
