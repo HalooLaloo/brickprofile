@@ -15,6 +15,11 @@ import {
   Gift,
   MessageSquareQuote,
   Crown,
+  HelpCircle,
+  Hammer,
+  Download,
+  MessageCircleQuestion,
+  Scale,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +31,7 @@ interface Photo {
 }
 
 type Platform = "facebook" | "instagram";
-type PostType = "before-after" | "showcase" | "tips" | "offer" | "testimonial";
+type PostType = "before-after" | "showcase" | "quick-tip" | "question" | "did-you-know" | "this-or-that" | "behind-scenes" | "testimonial" | "offer";
 
 const postTypes = [
   {
@@ -34,30 +39,63 @@ const postTypes = [
     name: "Before & After",
     description: "Show the transformation of your work",
     icon: ArrowRight,
+    needsPhotos: true,
   },
   {
     id: "showcase" as PostType,
     name: "Project Showcase",
     description: "Highlight a recent completed project",
     icon: ImageIcon,
+    needsPhotos: true,
   },
   {
-    id: "tips" as PostType,
-    name: "Tips & Advice",
-    description: "Share expert knowledge with your audience",
+    id: "quick-tip" as PostType,
+    name: "Quick Tip",
+    description: "Short tip with an engaging question",
     icon: Lightbulb,
+    needsPhotos: false,
   },
   {
-    id: "offer" as PostType,
-    name: "Special Offer",
-    description: "Promote a discount or special deal",
-    icon: Gift,
+    id: "question" as PostType,
+    name: "Question / Poll",
+    description: "Ask followers an engaging question",
+    icon: MessageCircleQuestion,
+    needsPhotos: false,
+  },
+  {
+    id: "did-you-know" as PostType,
+    name: "Did You Know?",
+    description: "Share an interesting industry fact",
+    icon: HelpCircle,
+    needsPhotos: false,
+  },
+  {
+    id: "this-or-that" as PostType,
+    name: "This or That",
+    description: "Fun comparison to spark discussion",
+    icon: Scale,
+    needsPhotos: false,
+  },
+  {
+    id: "behind-scenes" as PostType,
+    name: "Behind the Scenes",
+    description: "Show the real work process",
+    icon: Hammer,
+    needsPhotos: true,
   },
   {
     id: "testimonial" as PostType,
     name: "Customer Testimonial",
     description: "Share a positive review from a client",
     icon: MessageSquareQuote,
+    needsPhotos: true,
+  },
+  {
+    id: "offer" as PostType,
+    name: "Special Offer",
+    description: "Promote a discount or special deal",
+    icon: Gift,
+    needsPhotos: false,
   },
 ];
 
@@ -125,7 +163,8 @@ export default function SocialPage() {
   };
 
   const generatePost = async () => {
-    if (selectedPhotos.length === 0 && postType !== "tips" && postType !== "offer") {
+    const currentPostType = postTypes.find(t => t.id === postType);
+    if (currentPostType?.needsPhotos && selectedPhotos.length === 0) {
       alert("Please select at least one photo");
       return;
     }
@@ -164,6 +203,39 @@ export default function SocialPage() {
     navigator.clipboard.writeText(generatedPost);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadImage = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      // Fallback: open in new tab
+      window.open(url, "_blank");
+    }
+  };
+
+  const downloadAllImages = async () => {
+    for (let i = 0; i < selectedPhotos.length; i++) {
+      const photo = photos.find((p) => p.id === selectedPhotos[i]);
+      if (photo) {
+        const label = postType === "before-after"
+          ? (i === 0 ? "before" : "after")
+          : `photo-${i + 1}`;
+        await downloadImage(photo.url, `${companyInfo?.company_name || "post"}-${label}.jpg`);
+        // Small delay between downloads
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
   };
 
   return (
@@ -249,7 +321,7 @@ export default function SocialPage() {
       </div>
 
       {/* Photo Selection */}
-      {(postType === "before-after" || postType === "showcase" || postType === "testimonial") && (
+      {postTypes.find(t => t.id === postType)?.needsPhotos && (
         <div className="card p-6">
           <h2 className="text-lg font-semibold mb-2">3. Select Photos</h2>
           <p className="text-sm text-dark-400 mb-4">
@@ -374,20 +446,34 @@ export default function SocialPage() {
 
           {selectedPhotos.length > 0 && (
             <div className="mt-4">
-              <p className="text-sm text-dark-400 mb-2">Photos to include:</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-dark-400">Photos to include:</p>
+                <button
+                  onClick={downloadAllImages}
+                  className="btn-secondary btn-sm"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Images
+                </button>
+              </div>
               <div className="flex gap-2">
                 {selectedPhotos.map((id, index) => {
                   const photo = photos.find((p) => p.id === id);
                   return (
                     <div
                       key={id}
-                      className="w-16 h-16 rounded-lg overflow-hidden relative"
+                      className="w-16 h-16 rounded-lg overflow-hidden relative cursor-pointer group"
+                      onClick={() => photo && downloadImage(photo.url, `photo-${index + 1}.jpg`)}
+                      title="Click to download"
                     >
                       <img
                         src={photo?.url}
                         alt={`Selected ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Download className="w-4 h-4 text-white" />
+                      </div>
                       {postType === "before-after" && (
                         <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-center text-xs py-0.5">
                           {index === 0 ? "Before" : "After"}
