@@ -63,6 +63,19 @@ const bgColorPresets = [
   { name: "Charcoal", value: "#374151", textColor: "#ffffff" },
   { name: "Navy", value: "#1e3a5f", textColor: "#ffffff" },
   { name: "Black", value: "#111827", textColor: "#ffffff" },
+  { name: "Forest", value: "#14532d", textColor: "#ffffff" },
+  { name: "Burgundy", value: "#7f1d1d", textColor: "#ffffff" },
+];
+
+const companyNameColorPresets = [
+  { name: "Black", value: "#111827" },
+  { name: "White", value: "#ffffff" },
+  { name: "Navy", value: "#1e3a5f" },
+  { name: "Blue", value: "#3b82f6" },
+  { name: "Red", value: "#dc2626" },
+  { name: "Gold", value: "#d97706" },
+  { name: "Green", value: "#16a34a" },
+  { name: "Purple", value: "#7c3aed" },
 ];
 
 export default function BusinessCardsPage() {
@@ -316,7 +329,7 @@ export default function BusinessCardsPage() {
               <div className="w-4 h-4 rounded border border-dark-600" style={{ backgroundColor: activeBgColor }} />
               Background
             </h2>
-            <div className="grid grid-cols-6 gap-1.5 mb-3">
+            <div className="grid grid-cols-8 gap-1.5 mb-3">
               {bgColorPresets.map((color) => (
                 <button
                   key={color.value}
@@ -341,6 +354,44 @@ export default function BusinessCardsPage() {
               <input type="text" value={customBgColor || bgColor}
                 onChange={(e) => setCustomBgColor(e.target.value)}
                 placeholder="#ffffff" className="input flex-1 text-xs font-mono py-1" />
+            </div>
+          </div>
+
+          {/* Company Name Color */}
+          <div className="card p-4">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <Type className="w-4 h-4 text-brand-400" />
+              Company Name Color
+            </h2>
+            <div className="grid grid-cols-8 gap-1.5 mb-3">
+              {companyNameColorPresets.map((color) => (
+                <button
+                  key={color.value}
+                  onClick={() => setCompanyNameColor(color.value)}
+                  className={cn(
+                    "w-full aspect-square rounded border-2 transition-all relative",
+                    companyNameColor === color.value ? "border-brand-500 scale-110" : "border-dark-600 hover:scale-105"
+                  )}
+                  style={{ backgroundColor: color.value }}
+                  title={color.name}
+                >
+                  {companyNameColor === color.value && (
+                    <Check className={cn("w-3 h-3 absolute inset-0 m-auto", isLightColor(color.value) ? "text-gray-800" : "text-white")} />
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input type="color" value={companyNameColor || activeTextColor}
+                onChange={(e) => setCompanyNameColor(e.target.value)}
+                className="w-8 h-8 rounded cursor-pointer bg-transparent" />
+              <input type="text" value={companyNameColor}
+                onChange={(e) => setCompanyNameColor(e.target.value)}
+                placeholder="Auto" className="input flex-1 text-xs font-mono py-1" />
+              {companyNameColor && (
+                <button onClick={() => setCompanyNameColor("")}
+                  className="btn-ghost btn-sm text-xs">Reset</button>
+              )}
             </div>
           </div>
 
@@ -395,14 +446,8 @@ export default function BusinessCardsPage() {
             <div className="space-y-2">
               <div>
                 <label className="text-xs text-dark-400 mb-1 block">Company Name</label>
-                <div className="flex gap-2">
-                  <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)}
-                    className="input flex-1 text-sm" placeholder="Your Company Name" />
-                  <input type="color" value={companyNameColor || activeTextColor}
-                    onChange={(e) => setCompanyNameColor(e.target.value)}
-                    className="w-10 h-10 rounded cursor-pointer bg-transparent border border-dark-600"
-                    title="Company name color" />
-                </div>
+                <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)}
+                  className="input w-full text-sm" placeholder="Your Company Name" />
               </div>
               <div>
                 <label className="text-xs text-dark-400 mb-1 block">Services</label>
