@@ -90,6 +90,7 @@ export default function BusinessCardsPage() {
   const [services, setServices] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [companyNameColor, setCompanyNameColor] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -394,8 +395,14 @@ export default function BusinessCardsPage() {
             <div className="space-y-2">
               <div>
                 <label className="text-xs text-dark-400 mb-1 block">Company Name</label>
-                <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)}
-                  className="input w-full text-sm" placeholder="Your Company Name" />
+                <div className="flex gap-2">
+                  <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)}
+                    className="input flex-1 text-sm" placeholder="Your Company Name" />
+                  <input type="color" value={companyNameColor || activeTextColor}
+                    onChange={(e) => setCompanyNameColor(e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer bg-transparent border border-dark-600"
+                    title="Company name color" />
+                </div>
               </div>
               <div>
                 <label className="text-xs text-dark-400 mb-1 block">Services</label>
@@ -477,7 +484,7 @@ export default function BusinessCardsPage() {
                       </div>
                       <div className="flex-1 p-4 flex flex-col justify-between">
                         <div>
-                          <p className="text-lg font-bold leading-tight">{companyName || "Company Name"}</p>
+                          <p className="text-lg font-bold leading-tight" style={{ color: companyNameColor || activeTextColor }}>{companyName || "Company Name"}</p>
                           {services && <p className="text-[10px] mt-1 font-medium" style={{ color: activeAccentColor }}>{services}</p>}
                         </div>
                         <div>
@@ -497,7 +504,7 @@ export default function BusinessCardsPage() {
                   {template === "corporate" && (
                     <div className="h-full flex flex-col">
                       <div className="px-5 py-3 flex items-center justify-between" style={{ backgroundColor: activeAccentColor }}>
-                        <p className="text-base font-bold text-white">{companyName || "Company Name"}</p>
+                        <p className="text-base font-bold" style={{ color: companyNameColor || "#ffffff" }}>{companyName || "Company Name"}</p>
                         {logoUrl && <img src={logoUrl} alt="Logo" className="w-8 h-8 object-contain" />}
                       </div>
                       <div className="flex-1 p-4 flex flex-col justify-between">
@@ -528,7 +535,7 @@ export default function BusinessCardsPage() {
                       <div className="h-1.5" style={{ backgroundColor: activeAccentColor }} />
                       <div className="flex-1 p-5 flex flex-col items-center justify-center text-center">
                         {logoUrl && <img src={logoUrl} alt="Logo" className="w-12 h-12 object-contain mb-2" />}
-                        <p className="text-lg font-bold">{companyName || "Company Name"}</p>
+                        <p className="text-lg font-bold" style={{ color: companyNameColor || activeTextColor }}>{companyName || "Company Name"}</p>
                         {services && <p className="text-[10px] mt-1 mb-2" style={{ color: activeAccentColor }}>{services}</p>}
                         {yourName && <p className="text-sm font-medium mb-3">{yourName}</p>}
                         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs" style={{ color: secondaryTextColor }}>
@@ -553,7 +560,7 @@ export default function BusinessCardsPage() {
                         <div className="flex items-center gap-3">
                           {logoUrl && <img src={logoUrl} alt="Logo" className="w-12 h-12 object-contain" />}
                           <div>
-                            <p className="text-lg font-bold leading-tight">{companyName || "Company Name"}</p>
+                            <p className="text-lg font-bold leading-tight" style={{ color: companyNameColor || activeTextColor }}>{companyName || "Company Name"}</p>
                             {services && <p className="text-[10px] mt-0.5" style={{ color: activeAccentColor }}>{services}</p>}
                           </div>
                         </div>
