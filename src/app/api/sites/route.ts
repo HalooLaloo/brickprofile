@@ -67,6 +67,9 @@ export async function POST(request: Request) {
       primaryColor,
     } = body;
 
+    // Convert areas to array if it's a string (e.g., "Sydney, 30km radius")
+    const serviceAreas = Array.isArray(areas) ? areas : areas ? [areas] : [];
+
     // Generate a unique slug
     let slug = generateSlug(companyName);
 
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
           name,
           description: generatedContent?.serviceDescriptions?.[name] || "",
         })),
-        service_areas: areas,
+        service_areas: serviceAreas,
         phone,
         email,
         template: template || "classic",

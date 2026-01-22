@@ -37,7 +37,7 @@ Services Offered: ${services.join(", ")}
 Typical Project Details: ${serviceDetails || "Not provided"}
 Experience: ${experience}
 Team Size: ${teamSize || "Not specified"}
-Service Areas: ${areas.join(", ")}
+Service Areas: ${Array.isArray(areas) ? areas.join(", ") : areas || "Not specified"}
 Certifications/Qualifications: ${specialties || "Not specified"}
 Unique Value Proposition: ${uniqueValue || "Not specified"}
 Recent Project Examples: ${projectExamples || "Not provided"}
@@ -106,7 +106,7 @@ IMPORTANT:
     return NextResponse.json({
       headline: `Expert ${answers?.contractorType || 'Contracting'} Services You Can Trust`,
       aboutText:
-        `${answers?.companyName || 'Our company'} is a professional ${answers?.contractorType || 'contracting'} business with ${answers?.experience || 'years of'} experience serving ${answers?.areas?.join(', ') || 'the local area'}.\n\nWe specialise in ${fallbackServices.join(', ') || 'a range of services'}, bringing expertise and attention to detail to every project. ${answers?.specialties ? `Our team holds ${answers.specialties} certifications, ensuring quality workmanship on every job.` : ''}\n\n${answers?.uniqueValue || 'What sets us apart is our commitment to customer satisfaction and quality craftsmanship.'}\n\nContact us today to discuss your project and get a free quote.`,
+        `${answers?.companyName || 'Our company'} is a professional ${answers?.contractorType || 'contracting'} business with ${answers?.experience || 'years of'} experience serving ${Array.isArray(answers?.areas) ? answers.areas.join(', ') : answers?.areas || 'the local area'}.\n\nWe specialise in ${fallbackServices.join(', ') || 'a range of services'}, bringing expertise and attention to detail to every project. ${answers?.specialties ? `Our team holds ${answers.specialties} certifications, ensuring quality workmanship on every job.` : ''}\n\n${answers?.uniqueValue || 'What sets us apart is our commitment to customer satisfaction and quality craftsmanship.'}\n\nContact us today to discuss your project and get a free quote.`,
       serviceDescriptions: Object.fromEntries(
         fallbackServices.map((s: string) => [
           s,

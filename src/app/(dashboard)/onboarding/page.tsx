@@ -35,7 +35,7 @@ interface OnboardingData {
   serviceDetails: string;
   experience: string;
   teamSize: string;
-  areas: string[];
+  areas: string;
   specialties: string;
   uniqueValue: string;
   phone: string;
@@ -75,7 +75,7 @@ const questions = [
   },
   {
     key: "areas",
-    question: "What areas do you serve? List the cities or regions.",
+    question: "Where are you based and how far do you travel? (e.g., \"Sydney, 30km radius\" or \"Manchester and surrounding areas\")",
   },
   {
     key: "specialties",
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
     serviceDetails: "",
     experience: "",
     teamSize: "",
-    areas: [],
+    areas: "",
     specialties: "",
     uniqueValue: "",
     phone: "",
@@ -229,7 +229,7 @@ export default function OnboardingPage() {
     const question = questions[currentQuestion];
     const updatedData = { ...onboardingData };
 
-    if (question.key === "services" || question.key === "areas") {
+    if (question.key === "services") {
       updatedData[question.key] = userMessage.split(",").map((s) => s.trim());
     } else {
       (updatedData as unknown as Record<string, string>)[question.key] = userMessage;
@@ -358,7 +358,7 @@ export default function OnboardingPage() {
         // Fallback content - use the data we have
         const fallbackContent = {
           headline: `Expert ${updatedData.contractorType || updatedData.services[0] || "Contracting"} Services`,
-          aboutText: `${updatedData.companyName} is a professional ${updatedData.contractorType || 'contracting'} business with ${updatedData.experience} experience serving ${updatedData.areas.join(", ")}.\n\nWe specialise in ${updatedData.services.join(", ")}, bringing expertise and attention to detail to every project.${updatedData.specialties ? ` Our team holds ${updatedData.specialties} certifications.` : ''}\n\n${updatedData.uniqueValue || 'What sets us apart is our commitment to customer satisfaction and quality craftsmanship.'}\n\nContact us today to discuss your project and get a free quote.`,
+          aboutText: `${updatedData.companyName} is a professional ${updatedData.contractorType || 'contracting'} business with ${updatedData.experience} experience serving ${updatedData.areas || 'the local area'}.\n\nWe specialise in ${updatedData.services.join(", ")}, bringing expertise and attention to detail to every project.${updatedData.specialties ? ` Our team holds ${updatedData.specialties} certifications.` : ''}\n\n${updatedData.uniqueValue || 'What sets us apart is our commitment to customer satisfaction and quality craftsmanship.'}\n\nContact us today to discuss your project and get a free quote.`,
           serviceDescriptions: Object.fromEntries(
             updatedData.services.map((s) => [
               s,
