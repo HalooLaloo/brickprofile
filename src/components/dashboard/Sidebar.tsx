@@ -17,6 +17,7 @@ import {
   ChevronDown,
   Plus,
   Check,
+  Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
@@ -42,7 +43,8 @@ const navigation = [
   { name: "Photos", href: "/photos", icon: Images },
   { name: "Reviews", href: "/reviews", icon: Star },
   { name: "Leads", href: "/leads", icon: Users },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Social Content", href: "/social", icon: Share2, pro: true },
+  { name: "Analytics", href: "/analytics", icon: BarChart3, pro: true },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -174,7 +176,7 @@ export function Sidebar({ user, profile, sites, activeSite, canCreateMore, maxSi
         {hasSites &&
           navigation.map((item) => {
             const isActive = pathname === item.href;
-            const isAnalytics = item.href === "/analytics";
+            const showProBadge = (item as any).pro && !isPro;
 
             return (
               <Link
@@ -189,7 +191,7 @@ export function Sidebar({ user, profile, sites, activeSite, canCreateMore, maxSi
               >
                 <item.icon className="w-5 h-5" />
                 {item.name}
-                {isAnalytics && !isPro && (
+                {showProBadge && (
                   <span className="ml-auto badge-primary text-xs">Pro</span>
                 )}
               </Link>
