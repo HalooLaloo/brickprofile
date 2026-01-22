@@ -58,13 +58,13 @@ const accentColorPresets = [
 
 const bgColorPresets = [
   { name: "White", value: "#ffffff", textColor: "#111827" },
-  { name: "Charcoal", value: "#374151", textColor: "#ffffff" },
-  { name: "Slate", value: "#475569", textColor: "#ffffff" },
   { name: "Navy", value: "#1e3a5f", textColor: "#ffffff" },
-  { name: "Black", value: "#111827", textColor: "#ffffff" },
-  { name: "Forest", value: "#14532d", textColor: "#ffffff" },
-  { name: "Burgundy", value: "#7f1d1d", textColor: "#ffffff" },
-  { name: "Brown", value: "#78350f", textColor: "#ffffff" },
+  { name: "Midnight", value: "#0f172a", textColor: "#ffffff" },
+  { name: "Graphite", value: "#1f2937", textColor: "#ffffff" },
+  { name: "Deep Teal", value: "#134e4a", textColor: "#ffffff" },
+  { name: "Plum", value: "#581c87", textColor: "#ffffff" },
+  { name: "Espresso", value: "#292524", textColor: "#ffffff" },
+  { name: "Onyx", value: "#171717", textColor: "#ffffff" },
 ];
 
 const companyNameColorPresets = [
