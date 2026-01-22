@@ -530,7 +530,7 @@ export default function BusinessCardsPage() {
                       <div className="flex-1 p-4 flex flex-col justify-between">
                         <div>
                           <p className="text-lg font-bold leading-tight" style={{ color: companyNameColor || activeTextColor }}>{companyName || "Company Name"}</p>
-                          {services && <p className="text-[10px] mt-1 font-medium" style={{ color: activeAccentColor }}>{services}</p>}
+                          {services && <p className="text-[11px] mt-1 font-medium" style={{ color: activeAccentColor }}>{services}</p>}
                         </div>
                         <div>
                           {yourName && <p className="font-semibold text-sm mb-2">{yourName}</p>}
@@ -554,7 +554,7 @@ export default function BusinessCardsPage() {
                       </div>
                       <div className="flex-1 p-4 flex flex-col justify-between">
                         {services && (
-                          <p className="text-[10px] font-medium" style={{ color: activeAccentColor }}>{services}</p>
+                          <p className="text-[11px] font-medium" style={{ color: activeAccentColor }}>{services}</p>
                         )}
                         <div className="flex justify-between items-end">
                           <div>
@@ -581,7 +581,7 @@ export default function BusinessCardsPage() {
                       <div className="flex-1 p-5 flex flex-col items-center justify-center text-center">
                         {logoUrl && <img src={logoUrl} alt="Logo" className="w-12 h-12 object-contain mb-2" />}
                         <p className="text-lg font-bold" style={{ color: companyNameColor || activeTextColor }}>{companyName || "Company Name"}</p>
-                        {services && <p className="text-[10px] mt-1 mb-2" style={{ color: activeAccentColor }}>{services}</p>}
+                        {services && <p className="text-[11px] mt-1 mb-2" style={{ color: activeAccentColor }}>{services}</p>}
                         {yourName && <p className="text-sm font-medium mb-3">{yourName}</p>}
                         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs" style={{ color: secondaryTextColor }}>
                           {phone && <p className="flex items-center gap-1"><Phone className="w-3 h-3" style={{ color: activeAccentColor }} />{phone}</p>}
@@ -606,7 +606,7 @@ export default function BusinessCardsPage() {
                           {logoUrl && <img src={logoUrl} alt="Logo" className="w-12 h-12 object-contain" />}
                           <div>
                             <p className="text-lg font-bold leading-tight" style={{ color: companyNameColor || activeTextColor }}>{companyName || "Company Name"}</p>
-                            {services && <p className="text-[10px] mt-0.5" style={{ color: activeAccentColor }}>{services}</p>}
+                            {services && <p className="text-[11px] mt-0.5" style={{ color: activeAccentColor }}>{services}</p>}
                           </div>
                         </div>
                         {cardSide === "single" && qrCodeUrl && (
