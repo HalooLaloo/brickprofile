@@ -38,6 +38,7 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
   const [saved, setSaved] = useState(false);
 
   const [formData, setFormData] = useState({
+    slug: site.slug || "",
     company_name: site.company_name || "",
     headline: site.headline || "",
     about_text: site.about_text || "",
@@ -54,6 +55,18 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
     is_published: site.is_published,
     show_quote_button: site.show_quote_button,
   });
+  const [slugError, setSlugError] = useState("");
+
+  const handleSlugChange = (value: string) => {
+    // Convert to URL-safe slug: lowercase, replace spaces with hyphens, remove special chars
+    const sanitized = value
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+    setFormData((prev) => ({ ...prev, slug: sanitized }));
+    setSaved(false);
+    setSlugError("");
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -100,6 +113,7 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
 
   const handleSave = async () => {
     setSaving(true);
+    setSlugError("");
 
     try {
       const response = await fetch("/api/sites", {
@@ -108,11 +122,18 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
         body: JSON.stringify({ ...formData, site_id: site.id }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         setSaved(true);
         router.refresh();
       } else {
-        throw new Error("Failed to save");
+        // Check if it's a slug error
+        if (data.error?.toLowerCase().includes("url") || data.error?.toLowerCase().includes("slug")) {
+          setSlugError(data.error);
+        } else {
+          alert(data.error || "Failed to save changes. Please try again.");
+        }
       }
     } catch (error) {
       console.error("Error saving:", error);
@@ -128,7 +149,7 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <a
-            href={`/site/${site.slug}`}
+            href={`/site/${formData.slug}`}
             target="_blank"
             className="btn-secondary btn-sm"
           >
@@ -176,6 +197,27 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
               onChange={handleChange}
               className="input"
             />
+          </div>
+          <div>
+            <label className="label">Website URL (slug)</label>
+            <div className="flex items-center">
+              <span className="px-3 py-2 bg-dark-800 border border-r-0 border-dark-700 rounded-l-lg text-dark-400 text-sm">
+                brickprofile.com/site/
+              </span>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => handleSlugChange(e.target.value)}
+                className="input rounded-l-none flex-1"
+                placeholder="your-company"
+              />
+            </div>
+            {slugError && (
+              <p className="text-xs text-red-400 mt-1">{slugError}</p>
+            )}
+            <p className="text-xs text-dark-500 mt-1">
+              Only lowercase letters, numbers, and hyphens allowed
+            </p>
           </div>
           <div>
             <label className="label">Headline</label>

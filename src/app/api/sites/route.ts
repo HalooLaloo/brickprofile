@@ -236,6 +236,32 @@ export async function PATCH(request: Request) {
       );
     }
 
+    // If slug is being updated, check if it's unique
+    if (updateData.slug) {
+      // Validate slug format
+      if (!/^[a-z0-9-]+$/.test(updateData.slug)) {
+        return NextResponse.json(
+          { error: "Slug can only contain lowercase letters, numbers, and hyphens" },
+          { status: 400 }
+        );
+      }
+
+      // Check if slug is already taken by another site
+      const { data: existingSlug } = await supabase
+        .from("ps_sites")
+        .select("id")
+        .eq("slug", updateData.slug)
+        .neq("id", site_id)
+        .single();
+
+      if (existingSlug) {
+        return NextResponse.json(
+          { error: "This URL is already taken. Please choose a different one." },
+          { status: 400 }
+        );
+      }
+    }
+
     const { data: site, error } = await supabase
       .from("ps_sites")
       .update({
