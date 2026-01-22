@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { data: site } = await supabase
     .from("ps_sites")
-    .select("company_name, headline, about_text")
+    .select("id, company_name, headline, about_text, service_areas")
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -28,12 +28,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  // Get first photo for og:image
+  const { data: photos } = await supabase
+    .from("ps_photos")
+    .select("url")
+    .eq("site_id", site.id)
+    .order("sort_order", { ascending: true })
+    .limit(1);
+
+  const firstPhoto = photos?.[0]?.url;
+  const serviceAreas = Array.isArray(site.service_areas)
+    ? site.service_areas.join(", ")
+    : site.service_areas;
+
+  const description = site.headline
+    ? `${site.headline}${serviceAreas ? ` | Serving ${serviceAreas}` : ""}`
+    : site.about_text?.slice(0, 160) || "Professional contractor portfolio";
+
   return {
-    title: `${site.company_name} - Portfolio`,
-    description: site.headline || site.about_text?.slice(0, 160),
+    title: `${site.company_name} | Professional Portfolio`,
+    description,
     openGraph: {
+      title: `${site.company_name}`,
+      description,
+      siteName: "BrickProfile",
+      type: "website",
+      ...(firstPhoto && { images: [{ url: firstPhoto, width: 1200, height: 630 }] }),
+    },
+    twitter: {
+      card: firstPhoto ? "summary_large_image" : "summary",
       title: site.company_name,
-      description: site.headline || "Professional contractor portfolio",
+      description,
+      ...(firstPhoto && { images: [firstPhoto] }),
     },
   };
 }
