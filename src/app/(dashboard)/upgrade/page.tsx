@@ -21,6 +21,7 @@ const features = {
     "Unlimited portfolio photos",
     "Custom domain support",
     "Social Media Content Generator",
+    "Business Card Generator with QR",
     "Full analytics dashboard",
     "Unlimited customer reviews",
     "Google Reviews integration",

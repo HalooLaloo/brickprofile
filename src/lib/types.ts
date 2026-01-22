@@ -163,6 +163,7 @@ export const PLAN_LIMITS = {
     emailNotifications: false,
     googleReviewsLink: false,
     socialContentGenerator: false,
+    businessCardGenerator: false,
   },
   pro: {
     maxPhotos: 1000,
@@ -174,6 +175,7 @@ export const PLAN_LIMITS = {
     emailNotifications: true,
     googleReviewsLink: true,
     socialContentGenerator: true,
+    businessCardGenerator: true,
   },
 } as const;
 

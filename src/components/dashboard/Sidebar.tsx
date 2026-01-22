@@ -18,6 +18,7 @@ import {
   Plus,
   Check,
   Share2,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
@@ -44,6 +45,7 @@ const navigation = [
   { name: "Reviews", href: "/reviews", icon: Star },
   { name: "Leads", href: "/leads", icon: Users },
   { name: "Social Content", href: "/social", icon: Share2, pro: true },
+  { name: "Business Cards", href: "/business-cards", icon: CreditCard, pro: true },
   { name: "Analytics", href: "/analytics", icon: BarChart3, pro: true },
   { name: "Settings", href: "/settings", icon: Settings },
 ];

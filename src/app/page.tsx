@@ -23,6 +23,7 @@ import {
   BrickWall,
   RefreshCw,
   Copy,
+  CreditCard,
 } from "lucide-react";
 
 const features = [
@@ -62,6 +63,13 @@ const features = [
     title: "Analytics Dashboard",
     description:
       "Track visitors, quote requests, and phone clicks. Know exactly how your site performs.",
+    pro: true,
+  },
+  {
+    icon: CreditCard,
+    title: "Business Card Generator",
+    description:
+      "Create professional business cards with QR code to your portfolio. Download print-ready PDFs.",
     pro: true,
   },
 ];
@@ -466,6 +474,7 @@ export default function LandingPage() {
                   "Unlimited portfolio photos",
                   "Custom domain support",
                   "Social Media Content Generator",
+                  "Business Card Generator with QR",
                   "Full analytics dashboard",
                   "Unlimited customer reviews",
                   "Google Reviews integration",
