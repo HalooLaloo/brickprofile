@@ -31,14 +31,12 @@ const features = [
     title: "AI-Powered Content",
     description:
       "Answer a few questions and AI generates your entire website copy - headlines, about text, and service descriptions.",
-    pro: true,
   },
   {
     icon: Camera,
     title: "Smart Photo Gallery",
     description:
       "Upload project photos and AI automatically categorizes them. Create stunning before/after comparisons.",
-    pro: true,
   },
   {
     icon: Share2,
@@ -429,6 +427,8 @@ export default function LandingPage() {
                   "Free subdomain (you.brickprofile.com)",
                   "Up to 10 portfolio photos",
                   "All 4 templates",
+                  "AI content generation",
+                  "AI photo categorization",
                   "Contact form with email leads",
                   "5 customer reviews",
                   "Mobile responsive",
@@ -463,8 +463,6 @@ export default function LandingPage() {
               <ul className="space-y-3 mb-8">
                 {[
                   "Everything in Free, plus:",
-                  "AI content generation",
-                  "AI photo categorization",
                   "Unlimited portfolio photos",
                   "Custom domain support",
                   "Social Media Content Generator",
