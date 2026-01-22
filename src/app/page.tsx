@@ -21,6 +21,8 @@ import {
   ChevronRight,
   Quote,
   BrickWall,
+  RefreshCw,
+  Copy,
 } from "lucide-react";
 
 const features = [
@@ -156,10 +158,10 @@ export default function LandingPage() {
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 mb-6">
-              <Sparkles className="w-4 h-4 text-brand-400" />
-              <span className="text-sm text-brand-400">
-                AI-Powered Portfolio Websites
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 mb-6">
+              <Zap className="w-4 h-4 text-green-400" />
+              <span className="text-sm text-green-400 font-semibold">
+                100% FREE to Start - No Credit Card Required
               </span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
@@ -171,12 +173,12 @@ export default function LandingPage() {
               organizes your photos, and even generates social media posts.
               Built for contractors who'd rather be on the tools.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
               <Link
                 href="/register"
                 className="btn-primary btn-lg w-full sm:w-auto text-lg px-8"
               >
-                Create Your Portfolio Free
+                Start Free Now
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
               <Link
@@ -187,6 +189,11 @@ export default function LandingPage() {
               </Link>
             </div>
 
+            {/* Free highlight */}
+            <p className="text-green-400 font-medium mb-8">
+              Free forever. Upgrade only if you want Pro features.
+            </p>
+
             {/* Trust badges */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-dark-500 text-sm">
               <div className="flex items-center gap-2">
@@ -194,8 +201,8 @@ export default function LandingPage() {
                 <span>Setup in 10 minutes</span>
               </div>
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                <span>No credit card required</span>
+                <Check className="w-4 h-4 text-green-400" />
+                <span className="text-green-400">Free forever</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
@@ -288,6 +295,75 @@ export default function LandingPage() {
                 <p className="text-dark-400 text-sm">{feature.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Social Media Generator Highlight */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 border-t border-dark-800 bg-gradient-to-b from-brand-500/5 to-transparent">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 mb-4">
+                <Share2 className="w-4 h-4 text-brand-400" />
+                <span className="text-sm text-brand-400 font-medium">Pro Feature</span>
+              </div>
+              <h2 className="text-3xl font-bold mb-4">
+                Social Media Content Generator
+              </h2>
+              <p className="text-dark-400 mb-6">
+                Stop spending hours creating social media posts. Our AI generates engaging content
+                for Facebook and Instagram in seconds - perfectly tailored for contractors.
+              </p>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "9 post types: Before/After, Tips, Polls, Testimonials & more",
+                  "Optimized hashtags for maximum reach",
+                  "Uses your photos and company info automatically",
+                  "One-click copy & download",
+                  "Works for Facebook & Instagram",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm">
+                    <Check className="w-4 h-4 text-brand-400 flex-shrink-0" />
+                    <span className="text-dark-300">{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/register" className="btn-primary btn-md">
+                Try It Free
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </div>
+            <div className="relative">
+              <div className="card p-6 bg-dark-800/80">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center">
+                    <Share2 className="w-5 h-5 text-pink-400" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Instagram Post</p>
+                    <p className="text-xs text-dark-400">Before & After</p>
+                  </div>
+                </div>
+                <div className="bg-dark-900 rounded-lg p-4 text-sm text-dark-300 leading-relaxed">
+                  <p>✨ Transform your space! ✨</p>
+                  <p className="mt-2">Check out this incredible bathroom renovation we just completed in Sydney. From outdated to absolutely stunning! 🛁</p>
+                  <p className="mt-2">Swipe to see the before 👉</p>
+                  <p className="mt-3 text-dark-500">#BathroomRenovation #Sydney #HomeImprovement #BeforeAndAfter #Renovation...</p>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button className="btn-secondary btn-sm flex-1">
+                    <RefreshCw className="w-4 h-4 mr-1" />
+                    Regenerate
+                  </button>
+                  <button className="btn-primary btn-sm flex-1">
+                    <Copy className="w-4 h-4 mr-1" />
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-brand-500/20 rounded-full blur-3xl" />
+            </div>
           </div>
         </div>
       </section>
