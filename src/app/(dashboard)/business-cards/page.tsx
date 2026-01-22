@@ -9,14 +9,15 @@ import {
   Download,
   Loader2,
   Check,
-  Crown,
-  CreditCard,
   Phone,
   Mail,
-  Globe,
   Palette,
   Layers,
   MapPin,
+  Upload,
+  X,
+  Type,
+  Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ interface SiteData {
   service_areas: string[];
   primary_color: string;
   headline: string;
+  logo_url: string | null;
 }
 
 type Template = "classic" | "modern" | "bold" | "minimal";
@@ -42,7 +44,7 @@ const templates: { id: Template; name: string; description: string }[] = [
   { id: "minimal", name: "Minimal", description: "Simple and elegant" },
 ];
 
-const colorPresets = [
+const accentColorPresets = [
   { name: "Blue", value: "#3b82f6" },
   { name: "Green", value: "#22c55e" },
   { name: "Orange", value: "#f97316" },
@@ -53,38 +55,68 @@ const colorPresets = [
   { name: "Black", value: "#1f2937" },
 ];
 
+const bgColorPresets = [
+  { name: "White", value: "#ffffff", textColor: "#111827" },
+  { name: "Cream", value: "#fef9f3", textColor: "#111827" },
+  { name: "Light Gray", value: "#f3f4f6", textColor: "#111827" },
+  { name: "Dark Gray", value: "#374151", textColor: "#ffffff" },
+  { name: "Navy", value: "#1e3a5f", textColor: "#ffffff" },
+  { name: "Black", value: "#111827", textColor: "#ffffff" },
+];
+
 export default function BusinessCardsPage() {
   const [siteData, setSiteData] = useState<SiteData | null>(null);
-  const [isPro, setIsPro] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [template, setTemplate] = useState<Template>("classic");
   const [cardSide, setCardSide] = useState<CardSide>("double");
-  const [selectedColor, setSelectedColor] = useState("#3b82f6");
-  const [customColor, setCustomColor] = useState("");
+  const [accentColor, setAccentColor] = useState("#3b82f6");
+  const [customAccentColor, setCustomAccentColor] = useState("");
+  const [bgColor, setBgColor] = useState("#ffffff");
+  const [customBgColor, setCustomBgColor] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [showingBack, setShowingBack] = useState(false);
   const frontCardRef = useRef<HTMLDivElement>(null);
   const backCardRef = useRef<HTMLDivElement>(null);
 
+  // Editable fields
+  const [companyName, setCompanyName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sitesRes, profileRes] = await Promise.all([
+        const [sitesRes] = await Promise.all([
           fetch("/api/sites"),
-          fetch("/api/profile"),
         ]);
 
         if (sitesRes.ok) {
           const { sites } = await sitesRes.json();
           if (sites && sites.length > 0) {
-            setSiteData(sites[0]);
+            const site = sites[0];
+            setSiteData(site);
+
+            // Set initial values from site data
+            setCompanyName(site.company_name || "");
+            setPhone(site.phone || "");
+            setEmail(site.email || "");
+            setLogoUrl(site.logo_url || null);
+
+            // Build tagline from headline or services
+            const servicesText = site.services?.slice(0, 3).map((s: any) => s.name).join(" • ") || "";
+            setTagline(site.headline || servicesText || "Quality workmanship guaranteed");
+
             // Use site's primary color as default
-            if (sites[0].primary_color) {
-              setSelectedColor(sites[0].primary_color);
+            if (site.primary_color) {
+              setAccentColor(site.primary_color);
             }
+
             // Generate QR code for the portfolio URL
-            const portfolioUrl = `https://brickprofile.com/site/${sites[0].slug}`;
+            const portfolioUrl = `https://brickprofile.com/site/${site.slug}`;
             const qr = await QRCode.toDataURL(portfolioUrl, {
               width: 300,
               margin: 1,
@@ -92,11 +124,6 @@ export default function BusinessCardsPage() {
             });
             setQrCodeUrl(qr);
           }
-        }
-
-        if (profileRes.ok) {
-          const { profile } = await profileRes.json();
-          setIsPro(profile?.plan === "pro");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -108,7 +135,47 @@ export default function BusinessCardsPage() {
     fetchData();
   }, []);
 
-  const activeColor = customColor || selectedColor;
+  const activeAccentColor = customAccentColor || accentColor;
+  const activeBgColor = customBgColor || bgColor;
+  const activeTextColor = bgColorPresets.find(c => c.value === activeBgColor)?.textColor ||
+    (isLightColor(activeBgColor) ? "#111827" : "#ffffff");
+
+  function isLightColor(color: string): boolean {
+    const hex = color.replace("#", "");
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128;
+  }
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const { url } = await response.json();
+        setLogoUrl(url);
+      } else {
+        alert("Failed to upload logo");
+      }
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      alert("Failed to upload logo");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   const downloadPDF = async () => {
     if (!frontCardRef.current) return;
@@ -142,7 +209,7 @@ export default function BusinessCardsPage() {
         pdf.addImage(backImgData, "PNG", 0, 0, 85, 55);
       }
 
-      pdf.save(`${siteData?.company_name || "business-card"}.pdf`);
+      pdf.save(`${companyName || "business-card"}.pdf`);
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Failed to generate PDF. Please try again.");
@@ -173,14 +240,8 @@ export default function BusinessCardsPage() {
     );
   }
 
-  const servicesText = siteData.services?.slice(0, 3).map(s => s.name).join(" • ") || "";
-  const areasText = Array.isArray(siteData.service_areas)
-    ? siteData.service_areas.slice(0, 2).join(" & ")
-    : siteData.service_areas || "";
-  const tagline = siteData.headline || servicesText || "Quality workmanship guaranteed";
-
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold mb-2">Business Card Generator</h1>
@@ -189,13 +250,13 @@ export default function BusinessCardsPage() {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-8">
+      <div className="grid lg:grid-cols-5 gap-6">
         {/* Options Panel */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           {/* Template Selection */}
-          <div className="card p-5">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Palette className="w-5 h-5 text-brand-400" />
+          <div className="card p-4">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <Palette className="w-4 h-4 text-brand-400" />
               Template
             </h2>
             <div className="grid grid-cols-2 gap-2">
@@ -204,7 +265,7 @@ export default function BusinessCardsPage() {
                   key={t.id}
                   onClick={() => setTemplate(t.id)}
                   className={cn(
-                    "p-3 rounded-lg border-2 text-left transition-all",
+                    "p-2 rounded-lg border-2 text-left transition-all",
                     template === t.id
                       ? "border-brand-500 bg-brand-500/10"
                       : "border-dark-700 hover:border-dark-600"
@@ -217,31 +278,31 @@ export default function BusinessCardsPage() {
             </div>
           </div>
 
-          {/* Color Selection */}
-          <div className="card p-5">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full" style={{ backgroundColor: activeColor }} />
+          {/* Colors */}
+          <div className="card p-4">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: activeAccentColor }} />
               Accent Color
             </h2>
-            <div className="grid grid-cols-4 gap-2 mb-4">
-              {colorPresets.map((color) => (
+            <div className="grid grid-cols-8 gap-1.5 mb-3">
+              {accentColorPresets.map((color) => (
                 <button
                   key={color.value}
                   onClick={() => {
-                    setSelectedColor(color.value);
-                    setCustomColor("");
+                    setAccentColor(color.value);
+                    setCustomAccentColor("");
                   }}
                   className={cn(
-                    "w-full aspect-square rounded-lg border-2 transition-all relative",
-                    selectedColor === color.value && !customColor
+                    "w-full aspect-square rounded border-2 transition-all relative",
+                    accentColor === color.value && !customAccentColor
                       ? "border-white scale-110"
                       : "border-transparent hover:scale-105"
                   )}
                   style={{ backgroundColor: color.value }}
                   title={color.name}
                 >
-                  {selectedColor === color.value && !customColor && (
-                    <Check className="w-4 h-4 text-white absolute inset-0 m-auto" />
+                  {accentColor === color.value && !customAccentColor && (
+                    <Check className="w-3 h-3 text-white absolute inset-0 m-auto" />
                   )}
                 </button>
               ))}
@@ -249,31 +310,77 @@ export default function BusinessCardsPage() {
             <div className="flex gap-2">
               <input
                 type="color"
-                value={customColor || selectedColor}
-                onChange={(e) => setCustomColor(e.target.value)}
-                className="w-10 h-10 rounded cursor-pointer bg-transparent"
+                value={customAccentColor || accentColor}
+                onChange={(e) => setCustomAccentColor(e.target.value)}
+                className="w-8 h-8 rounded cursor-pointer bg-transparent"
               />
               <input
                 type="text"
-                value={customColor || selectedColor}
-                onChange={(e) => setCustomColor(e.target.value)}
+                value={customAccentColor || accentColor}
+                onChange={(e) => setCustomAccentColor(e.target.value)}
                 placeholder="#3b82f6"
-                className="input flex-1 text-sm font-mono"
+                className="input flex-1 text-xs font-mono py-1"
+              />
+            </div>
+          </div>
+
+          {/* Background Color */}
+          <div className="card p-4">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <div className="w-4 h-4 rounded border border-dark-600" style={{ backgroundColor: activeBgColor }} />
+              Background Color
+            </h2>
+            <div className="grid grid-cols-6 gap-1.5 mb-3">
+              {bgColorPresets.map((color) => (
+                <button
+                  key={color.value}
+                  onClick={() => {
+                    setBgColor(color.value);
+                    setCustomBgColor("");
+                  }}
+                  className={cn(
+                    "w-full aspect-square rounded border-2 transition-all relative",
+                    bgColor === color.value && !customBgColor
+                      ? "border-brand-500 scale-110"
+                      : "border-dark-600 hover:scale-105"
+                  )}
+                  style={{ backgroundColor: color.value }}
+                  title={color.name}
+                >
+                  {bgColor === color.value && !customBgColor && (
+                    <Check className={cn("w-3 h-3 absolute inset-0 m-auto", isLightColor(color.value) ? "text-gray-800" : "text-white")} />
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="color"
+                value={customBgColor || bgColor}
+                onChange={(e) => setCustomBgColor(e.target.value)}
+                className="w-8 h-8 rounded cursor-pointer bg-transparent"
+              />
+              <input
+                type="text"
+                value={customBgColor || bgColor}
+                onChange={(e) => setCustomBgColor(e.target.value)}
+                placeholder="#ffffff"
+                className="input flex-1 text-xs font-mono py-1"
               />
             </div>
           </div>
 
           {/* Card Type */}
-          <div className="card p-5">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Layers className="w-5 h-5 text-brand-400" />
+          <div className="card p-4">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <Layers className="w-4 h-4 text-brand-400" />
               Card Type
             </h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setCardSide("single")}
                 className={cn(
-                  "p-3 rounded-lg border-2 transition-all",
+                  "p-2 rounded-lg border-2 transition-all",
                   cardSide === "single"
                     ? "border-brand-500 bg-brand-500/10"
                     : "border-dark-700 hover:border-dark-600"
@@ -285,7 +392,7 @@ export default function BusinessCardsPage() {
               <button
                 onClick={() => setCardSide("double")}
                 className={cn(
-                  "p-3 rounded-lg border-2 transition-all",
+                  "p-2 rounded-lg border-2 transition-all",
                   cardSide === "double"
                     ? "border-brand-500 bg-brand-500/10"
                     : "border-dark-700 hover:border-dark-600"
@@ -297,36 +404,100 @@ export default function BusinessCardsPage() {
             </div>
           </div>
 
-          {/* Card Details */}
-          <div className="card p-5">
-            <h2 className="text-lg font-semibold mb-4">Card Details</h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-dark-400">Company:</span>
-                <span className="font-medium truncate ml-2">{siteData.company_name}</span>
+          {/* Logo Upload */}
+          <div className="card p-4">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-brand-400" />
+              Logo
+            </h2>
+            {logoUrl ? (
+              <div className="flex items-center gap-3">
+                <img src={logoUrl} alt="Logo" className="w-12 h-12 object-contain rounded bg-white p-1" />
+                <button
+                  onClick={() => setLogoUrl(null)}
+                  className="btn-ghost btn-sm text-red-400 hover:text-red-300"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Remove
+                </button>
               </div>
-              <div className="flex justify-between">
-                <span className="text-dark-400">Phone:</span>
-                <span>{siteData.phone || "Not set"}</span>
+            ) : (
+              <label className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 transition-colors">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                  disabled={uploadingLogo}
+                />
+                {uploadingLogo ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4 text-dark-400" />
+                )}
+                <span className="text-sm text-dark-400">Upload logo</span>
+              </label>
+            )}
+          </div>
+
+          {/* Editable Details */}
+          <div className="card p-4">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <Type className="w-4 h-4 text-brand-400" />
+              Card Details
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-dark-400 mb-1 block">Company Name</label>
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className="input w-full text-sm"
+                  placeholder="Your Company Name"
+                />
               </div>
-              <div className="flex justify-between">
-                <span className="text-dark-400">Email:</span>
-                <span className="truncate ml-2">{siteData.email || "Not set"}</span>
+              <div>
+                <label className="text-xs text-dark-400 mb-1 block">Phone</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="input w-full text-sm"
+                  placeholder="+61 400 000 000"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-dark-400 mb-1 block">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="input w-full text-sm"
+                  placeholder="hello@company.com"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-dark-400 mb-1 block">Tagline (for back side)</label>
+                <input
+                  type="text"
+                  value={tagline}
+                  onChange={(e) => setTagline(e.target.value)}
+                  className="input w-full text-sm"
+                  placeholder="Quality workmanship guaranteed"
+                />
               </div>
             </div>
-            <p className="text-xs text-dark-500 mt-3">
-              <Link href="/editor" className="text-brand-400 hover:underline">Edit in Website Editor</Link>
-            </p>
           </div>
         </div>
 
         {/* Preview & Download */}
-        <div className="lg:col-span-3 space-y-6">
-          <div className="card p-6">
+        <div className="lg:col-span-3 space-y-4">
+          <div className="card p-4">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Preview</h2>
+              <h2 className="font-semibold">Preview</h2>
               {cardSide === "double" && (
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <button
                     onClick={() => setShowingBack(false)}
                     className={cn(
@@ -355,40 +526,45 @@ export default function BusinessCardsPage() {
               <div className={cn(!showingBack ? "block" : "hidden")}>
                 <div
                   ref={frontCardRef}
-                  className="bg-white text-gray-900 rounded-lg shadow-2xl overflow-hidden"
-                  style={{ width: "340px", height: "200px" }}
+                  className="rounded-lg shadow-2xl overflow-hidden"
+                  style={{
+                    width: "340px",
+                    height: "200px",
+                    backgroundColor: activeBgColor,
+                    color: activeTextColor,
+                  }}
                 >
                   {/* Classic Template */}
                   {template === "classic" && (
                     <div className="h-full p-5 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">{siteData.company_name}</h3>
-                        {servicesText && (
-                          <p className="text-xs text-gray-500 mt-1">{servicesText}</p>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-lg font-bold">{companyName || "Company Name"}</h3>
+                          {tagline && (
+                            <p className="text-xs opacity-60 mt-1">{tagline}</p>
+                          )}
+                        </div>
+                        {logoUrl && (
+                          <img src={logoUrl} alt="Logo" className="w-10 h-10 object-contain" />
                         )}
                       </div>
                       <div className="flex justify-between items-end">
                         <div className="space-y-1">
-                          {siteData.phone && (
-                            <p className="text-sm text-gray-700 flex items-center gap-2">
-                              <Phone className="w-3 h-3" style={{ color: activeColor }} /> {siteData.phone}
+                          {phone && (
+                            <p className="text-sm flex items-center gap-2">
+                              <Phone className="w-3 h-3" style={{ color: activeAccentColor }} /> {phone}
                             </p>
                           )}
-                          {siteData.email && (
-                            <p className="text-sm text-gray-700 flex items-center gap-2">
-                              <Mail className="w-3 h-3" style={{ color: activeColor }} /> {siteData.email}
-                            </p>
-                          )}
-                          {areasText && (
-                            <p className="text-xs text-gray-500 flex items-center gap-2">
-                              <MapPin className="w-3 h-3" /> {areasText}
+                          {email && (
+                            <p className="text-sm flex items-center gap-2">
+                              <Mail className="w-3 h-3" style={{ color: activeAccentColor }} /> {email}
                             </p>
                           )}
                         </div>
                         {cardSide === "single" && qrCodeUrl && (
                           <div className="flex flex-col items-center">
                             <img src={qrCodeUrl} alt="QR Code" className="w-14 h-14" />
-                            <p className="text-[7px] text-gray-400 mt-1">View portfolio</p>
+                            <p className="text-[7px] opacity-50 mt-1">View portfolio</p>
                           </div>
                         )}
                       </div>
@@ -398,27 +574,25 @@ export default function BusinessCardsPage() {
                   {/* Modern Template */}
                   {template === "modern" && (
                     <div className="h-full flex">
-                      <div className="w-2" style={{ backgroundColor: activeColor }} />
+                      <div className="w-2" style={{ backgroundColor: activeAccentColor }} />
                       <div className="flex-1 p-5 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-xl font-bold" style={{ color: activeColor }}>
-                            {siteData.company_name}
-                          </h3>
-                          {servicesText && (
-                            <p className="text-xs text-gray-500 mt-1">{servicesText}</p>
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="text-xl font-bold" style={{ color: activeAccentColor }}>
+                              {companyName || "Company Name"}
+                            </h3>
+                            {tagline && (
+                              <p className="text-xs opacity-60 mt-1">{tagline}</p>
+                            )}
+                          </div>
+                          {logoUrl && (
+                            <img src={logoUrl} alt="Logo" className="w-10 h-10 object-contain" />
                           )}
                         </div>
                         <div className="flex justify-between items-end">
                           <div className="space-y-1">
-                            {siteData.phone && (
-                              <p className="text-sm text-gray-700">{siteData.phone}</p>
-                            )}
-                            {siteData.email && (
-                              <p className="text-sm text-gray-700">{siteData.email}</p>
-                            )}
-                            {areasText && (
-                              <p className="text-xs text-gray-500">{areasText}</p>
-                            )}
+                            {phone && <p className="text-sm">{phone}</p>}
+                            {email && <p className="text-sm">{email}</p>}
                           </div>
                           {cardSide === "single" && qrCodeUrl && (
                             <img src={qrCodeUrl} alt="QR Code" className="w-14 h-14" />
@@ -431,36 +605,34 @@ export default function BusinessCardsPage() {
                   {/* Bold Template */}
                   {template === "bold" && (
                     <div className="h-full flex flex-col">
-                      <div className="py-3 px-5" style={{ backgroundColor: activeColor }}>
-                        <h3 className="text-lg font-bold text-white">{siteData.company_name}</h3>
+                      <div className="py-3 px-5 flex items-center justify-between" style={{ backgroundColor: activeAccentColor }}>
+                        <h3 className="text-lg font-bold text-white">{companyName || "Company Name"}</h3>
+                        {logoUrl && (
+                          <img src={logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
+                        )}
                       </div>
                       <div className="flex-1 p-4 flex justify-between items-end">
                         <div className="space-y-1">
-                          {servicesText && (
-                            <p className="text-xs text-gray-600 mb-2">{servicesText}</p>
+                          {tagline && (
+                            <p className="text-xs opacity-60 mb-2">{tagline}</p>
                           )}
-                          {siteData.phone && (
-                            <p className="text-sm text-gray-700 flex items-center gap-2">
-                              <Phone className="w-3 h-3" style={{ color: activeColor }} />
-                              {siteData.phone}
+                          {phone && (
+                            <p className="text-sm flex items-center gap-2">
+                              <Phone className="w-3 h-3" style={{ color: activeAccentColor }} />
+                              {phone}
                             </p>
                           )}
-                          {siteData.email && (
-                            <p className="text-sm text-gray-700 flex items-center gap-2">
-                              <Mail className="w-3 h-3" style={{ color: activeColor }} />
-                              {siteData.email}
-                            </p>
-                          )}
-                          {areasText && (
-                            <p className="text-xs text-gray-500 flex items-center gap-2">
-                              <MapPin className="w-3 h-3" /> {areasText}
+                          {email && (
+                            <p className="text-sm flex items-center gap-2">
+                              <Mail className="w-3 h-3" style={{ color: activeAccentColor }} />
+                              {email}
                             </p>
                           )}
                         </div>
                         {cardSide === "single" && qrCodeUrl && (
                           <div className="flex flex-col items-center">
                             <img src={qrCodeUrl} alt="QR Code" className="w-14 h-14" />
-                            <p className="text-[7px] text-gray-400 mt-1">View portfolio</p>
+                            <p className="text-[7px] opacity-50 mt-1">View portfolio</p>
                           </div>
                         )}
                       </div>
@@ -469,19 +641,23 @@ export default function BusinessCardsPage() {
 
                   {/* Minimal Template */}
                   {template === "minimal" && (
-                    <div className="h-full p-6 flex flex-col justify-center">
-                      <h3 className="text-xl font-light text-gray-900 mb-1">{siteData.company_name}</h3>
-                      <div className="w-12 h-0.5 mb-4" style={{ backgroundColor: activeColor }} />
-                      <div className="space-y-1 text-sm text-gray-600">
-                        {siteData.phone && <p>{siteData.phone}</p>}
-                        {siteData.email && <p>{siteData.email}</p>}
-                        {areasText && <p className="text-xs text-gray-400 mt-2">{areasText}</p>}
-                      </div>
-                      {cardSide === "single" && qrCodeUrl && (
-                        <div className="absolute bottom-4 right-4">
-                          <img src={qrCodeUrl} alt="QR Code" className="w-12 h-12" />
+                    <div className="h-full p-6 flex">
+                      <div className="flex-1 flex flex-col justify-center">
+                        <h3 className="text-xl font-light mb-1">{companyName || "Company Name"}</h3>
+                        <div className="w-12 h-0.5 mb-4" style={{ backgroundColor: activeAccentColor }} />
+                        <div className="space-y-1 text-sm opacity-80">
+                          {phone && <p>{phone}</p>}
+                          {email && <p>{email}</p>}
                         </div>
-                      )}
+                      </div>
+                      <div className="flex flex-col items-end justify-between">
+                        {logoUrl && (
+                          <img src={logoUrl} alt="Logo" className="w-10 h-10 object-contain" />
+                        )}
+                        {cardSide === "single" && qrCodeUrl && (
+                          <img src={qrCodeUrl} alt="QR Code" className="w-12 h-12" />
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -492,22 +668,32 @@ export default function BusinessCardsPage() {
                 <div className={cn(showingBack ? "block" : "hidden")}>
                   <div
                     ref={backCardRef}
-                    className="bg-white text-gray-900 rounded-lg shadow-2xl overflow-hidden flex items-center justify-center"
-                    style={{ width: "340px", height: "200px" }}
+                    className="rounded-lg shadow-2xl overflow-hidden flex items-center justify-center"
+                    style={{
+                      width: "340px",
+                      height: "200px",
+                      backgroundColor: activeBgColor,
+                      color: activeTextColor,
+                    }}
                   >
                     <div className="text-center p-6">
-                      {qrCodeUrl && (
-                        <img src={qrCodeUrl} alt="QR Code" className="w-24 h-24 mx-auto mb-3" />
+                      {logoUrl && (
+                        <img src={logoUrl} alt="Logo" className="w-12 h-12 object-contain mx-auto mb-2" />
                       )}
-                      <p className="text-sm font-medium" style={{ color: activeColor }}>
+                      {qrCodeUrl && (
+                        <img src={qrCodeUrl} alt="QR Code" className="w-20 h-20 mx-auto mb-2" />
+                      )}
+                      <p className="text-sm font-medium" style={{ color: activeAccentColor }}>
                         Scan to view our work
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs opacity-50 mt-1">
                         brickprofile.com/site/{siteData.slug}
                       </p>
-                      <p className="text-[10px] text-gray-500 mt-3 max-w-[200px] mx-auto italic">
-                        "{tagline}"
-                      </p>
+                      {tagline && (
+                        <p className="text-[10px] opacity-40 mt-2 max-w-[200px] mx-auto italic">
+                          "{tagline}"
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
