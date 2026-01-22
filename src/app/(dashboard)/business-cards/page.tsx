@@ -58,13 +58,13 @@ const accentColorPresets = [
 
 const bgColorPresets = [
   { name: "White", value: "#ffffff", textColor: "#111827" },
-  { name: "Cream", value: "#fef9f3", textColor: "#111827" },
-  { name: "Light Gray", value: "#f3f4f6", textColor: "#111827" },
   { name: "Charcoal", value: "#374151", textColor: "#ffffff" },
+  { name: "Slate", value: "#475569", textColor: "#ffffff" },
   { name: "Navy", value: "#1e3a5f", textColor: "#ffffff" },
   { name: "Black", value: "#111827", textColor: "#ffffff" },
   { name: "Forest", value: "#14532d", textColor: "#ffffff" },
   { name: "Burgundy", value: "#7f1d1d", textColor: "#ffffff" },
+  { name: "Brown", value: "#78350f", textColor: "#ffffff" },
 ];
 
 const companyNameColorPresets = [
@@ -120,7 +120,7 @@ export default function BusinessCardsPage() {
             setPhone(site.phone || "");
             setEmail(site.email || "");
             setLogoUrl(site.logo_url || null);
-            setWebsite(`brickprofile.com/site/${site.slug}`);
+            setWebsite(`${site.slug}.brickprofile.com`);
 
             // Services from site data
             const servicesText = site.services?.slice(0, 3).map((s: any) => s.name).join(" • ") || "";
@@ -134,7 +134,7 @@ export default function BusinessCardsPage() {
               setAccentColor(site.primary_color);
             }
 
-            const portfolioUrl = `https://brickprofile.com/site/${site.slug}`;
+            const portfolioUrl = `https://${site.slug}.brickprofile.com`;
             const qr = await QRCode.toDataURL(portfolioUrl, {
               width: 300,
               margin: 1,
@@ -647,7 +647,7 @@ export default function BusinessCardsPage() {
                         Scan to view our work
                       </p>
                       <p className="text-xs mt-1" style={{ color: secondaryTextColor }}>
-                        {website || `brickprofile.com/site/${siteData.slug}`}
+                        {website || `${siteData.slug}.brickprofile.com`}
                       </p>
                     </div>
                   </div>
