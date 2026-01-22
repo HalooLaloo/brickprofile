@@ -124,46 +124,46 @@ export default function BusinessCardsPage() {
     );
   }
 
-  // Pro gate
-  if (isPro === false) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <div className="card p-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-brand-500/20 flex items-center justify-center mx-auto mb-6">
-            <CreditCard className="w-8 h-8 text-brand-400" />
-          </div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
-            <Crown className="w-4 h-4 text-amber-400" />
-            <span className="text-sm text-amber-400 font-medium">Pro Feature</span>
-          </div>
-          <h1 className="text-2xl font-bold mb-4">Business Card Generator</h1>
-          <p className="text-dark-400 mb-6 max-w-md mx-auto">
-            Create professional business cards with your portfolio QR code.
-            Download print-ready PDF and order from any print shop.
-          </p>
+  // Pro gate - disabled for testing
+  // if (isPro === false) {
+  //   return (
+  //     <div className="max-w-2xl mx-auto">
+  //       <div className="card p-8 text-center">
+  //         <div className="w-16 h-16 rounded-full bg-brand-500/20 flex items-center justify-center mx-auto mb-6">
+  //           <CreditCard className="w-8 h-8 text-brand-400" />
+  //         </div>
+  //         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
+  //           <Crown className="w-4 h-4 text-amber-400" />
+  //           <span className="text-sm text-amber-400 font-medium">Pro Feature</span>
+  //         </div>
+  //         <h1 className="text-2xl font-bold mb-4">Business Card Generator</h1>
+  //         <p className="text-dark-400 mb-6 max-w-md mx-auto">
+  //           Create professional business cards with your portfolio QR code.
+  //           Download print-ready PDF and order from any print shop.
+  //         </p>
 
-          <div className="grid sm:grid-cols-2 gap-4 mb-8 text-left max-w-sm mx-auto">
-            {[
-              "Professional templates",
-              "Auto QR code to portfolio",
-              "Print-ready PDF export",
-              "Your branding & colors",
-            ].map((feature) => (
-              <div key={feature} className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-brand-400 flex-shrink-0" />
-                <span className="text-dark-300">{feature}</span>
-              </div>
-            ))}
-          </div>
+  //         <div className="grid sm:grid-cols-2 gap-4 mb-8 text-left max-w-sm mx-auto">
+  //           {[
+  //             "Professional templates",
+  //             "Auto QR code to portfolio",
+  //             "Print-ready PDF export",
+  //             "Your branding & colors",
+  //           ].map((feature) => (
+  //             <div key={feature} className="flex items-center gap-2 text-sm">
+  //               <Check className="w-4 h-4 text-brand-400 flex-shrink-0" />
+  //               <span className="text-dark-300">{feature}</span>
+  //             </div>
+  //           ))}
+  //         </div>
 
-          <Link href="/upgrade" className="btn-primary btn-lg">
-            <Crown className="w-5 h-5 mr-2" />
-            Upgrade to Pro - $19.99/mo
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  //         <Link href="/upgrade" className="btn-primary btn-lg">
+  //           <Crown className="w-5 h-5 mr-2" />
+  //           Upgrade to Pro - $19.99/mo
+  //         </Link>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (!siteData) {
     return (
