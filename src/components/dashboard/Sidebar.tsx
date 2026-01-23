@@ -19,6 +19,7 @@ import {
   Check,
   Share2,
   CreditCard,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
@@ -44,6 +45,7 @@ const navigation = [
   { name: "Photos", href: "/photos", icon: Images },
   { name: "Reviews", href: "/reviews", icon: Star },
   { name: "Leads", href: "/leads", icon: Users },
+  { name: "QuoteSnap", href: "/quotesnap", icon: Zap, highlight: true },
   { name: "Social Content", href: "/social", icon: Share2, pro: true },
   { name: "Business Cards", href: "/business-cards", icon: CreditCard, pro: true },
   { name: "Analytics", href: "/analytics", icon: BarChart3, pro: true },
@@ -179,6 +181,7 @@ export function Sidebar({ user, profile, sites, activeSite, canCreateMore, maxSi
           navigation.map((item) => {
             const isActive = pathname === item.href;
             const showProBadge = (item as any).pro && !isPro;
+            const isHighlight = (item as any).highlight;
 
             return (
               <Link
@@ -188,11 +191,16 @@ export function Sidebar({ user, profile, sites, activeSite, canCreateMore, maxSi
                   "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
                     ? "bg-brand-500/10 text-brand-400"
+                    : isHighlight
+                    ? "text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
                     : "text-dark-400 hover:text-dark-100 hover:bg-dark-800"
                 )}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className={cn("w-5 h-5", isHighlight && !isActive && "text-amber-400")} />
                 {item.name}
+                {isHighlight && !isActive && (
+                  <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">NEW</span>
+                )}
                 {showProBadge && (
                   <span className="ml-auto badge-primary text-xs">Pro</span>
                 )}
