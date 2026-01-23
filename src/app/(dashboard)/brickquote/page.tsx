@@ -52,7 +52,7 @@ const steps = [
   {
     number: "1",
     title: "Sign up for BrickQuote",
-    description: "Create your free BrickQuote account at quotesnap.pro",
+    description: "Create your free BrickQuote account at brickquote.app",
   },
   {
     number: "2",
@@ -128,7 +128,7 @@ export default function BrickQuotePage() {
 
   const copyLink = () => {
     if (quotesnapUserId) {
-      navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_QUOTESNAP_URL || 'https://quotesnap.pro'}/request/${quotesnapUserId}`);
+      navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_QUOTESNAP_URL || 'https://brickquote.app'}/request/${quotesnapUserId}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -183,7 +183,7 @@ export default function BrickQuotePage() {
                 <p className="text-sm text-dark-400">{step.description}</p>
                 {index === 0 && (
                   <a
-                    href="https://quotesnap.pro"
+                    href="https://brickquote.app"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 mt-2"
@@ -248,7 +248,7 @@ export default function BrickQuotePage() {
                   <p className="text-xs text-dark-400 mb-2">Your quote request link:</p>
                   <div className="flex items-center gap-2">
                     <code className="text-sm text-amber-400 flex-1 truncate">
-                      {process.env.NEXT_PUBLIC_QUOTESNAP_URL || 'https://quotesnap.pro'}/request/{quotesnapUserId}
+                      {process.env.NEXT_PUBLIC_QUOTESNAP_URL || 'https://brickquote.app'}/request/{quotesnapUserId}
                     </code>
                     <button
                       onClick={copyLink}
@@ -305,7 +305,7 @@ export default function BrickQuotePage() {
           Don't have a BrickQuote account yet?
         </p>
         <a
-          href="https://quotesnap.pro"
+          href="https://brickquote.app"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-secondary btn-lg"

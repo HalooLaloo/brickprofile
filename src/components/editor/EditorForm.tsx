@@ -536,7 +536,7 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
               )}
               {formData.quotesnap_user_id && (
                 <a
-                  href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL || 'https://quotesnap.pro'}/request/${formData.quotesnap_user_id}`}
+                  href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL || 'https://brickquote.app'}/request/${formData.quotesnap_user_id}`}
                   target="_blank"
                   className="inline-flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 mt-2"
                 >
