@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import dns from "dns";
-import { promisify } from "util";
-
-const resolveCname = promisify(dns.resolveCname);
+import { getDomainConfig } from "@/lib/vercel";
 
 export async function GET(request: Request) {
   try {
@@ -41,46 +38,23 @@ export async function GET(request: Request) {
       );
     }
 
-    // Try to resolve CNAME record
-    try {
-      const hostname = domain.startsWith("www.") ? domain : `www.${domain}`;
-      const records = await resolveCname(hostname);
+    // Check domain status via Vercel API
+    const config = await getDomainConfig(domain);
 
-      // Check if any CNAME points to Vercel
-      const isVerified = records.some(
-        (record) =>
-          record.includes("vercel") ||
-          record.includes("vercel-dns.com") ||
-          record.includes(".vercel.app")
-      );
-
-      if (isVerified) {
-        return NextResponse.json({
-          verified: true,
-          message: "Domain is correctly configured!",
-          records,
-        });
-      } else {
-        return NextResponse.json({
-          verified: false,
-          message: `CNAME found but not pointing to Vercel. Found: ${records.join(", ")}`,
-          records,
-        });
-      }
-    } catch (dnsError: any) {
-      // ENOTFOUND means no DNS record found
-      if (dnsError.code === "ENOTFOUND" || dnsError.code === "ENODATA") {
-        return NextResponse.json({
-          verified: false,
-          message: "No CNAME record found. Please add the DNS record and wait for propagation.",
-        });
-      }
-
-      // For other errors, try alternative check
-      console.error("DNS lookup error:", dnsError);
+    if (config.verified) {
+      return NextResponse.json({
+        verified: true,
+        message: "Domain is correctly configured and verified!",
+      });
+    } else if (config.configured) {
       return NextResponse.json({
         verified: false,
-        message: "Could not verify DNS. Please ensure the CNAME record is set correctly.",
+        message: "Domain is added to Vercel but DNS is not yet configured. Please add the CNAME record.",
+      });
+    } else {
+      return NextResponse.json({
+        verified: false,
+        message: "Domain is pending configuration. Please add the CNAME record and wait for DNS propagation.",
       });
     }
   } catch (error) {

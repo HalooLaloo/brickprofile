@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateSlug } from "@/lib/utils";
 import { PLAN_LIMITS } from "@/lib/types";
+import { addDomainToVercel, removeDomainFromVercel } from "@/lib/vercel";
 
 export async function POST(request: Request) {
   try {
@@ -259,6 +260,34 @@ export async function PATCH(request: Request) {
           { error: "This URL is already taken. Please choose a different one." },
           { status: 400 }
         );
+      }
+    }
+
+    // Handle custom domain changes - add/remove from Vercel
+    if ("custom_domain" in updateData) {
+      // Get current site to check old domain
+      const { data: currentSite } = await supabase
+        .from("ps_sites")
+        .select("custom_domain")
+        .eq("id", site_id)
+        .eq("user_id", user.id)
+        .single();
+
+      const oldDomain = currentSite?.custom_domain;
+      const newDomain = updateData.custom_domain;
+
+      // Remove old domain from Vercel if it exists and is different
+      if (oldDomain && oldDomain !== newDomain) {
+        await removeDomainFromVercel(oldDomain);
+      }
+
+      // Add new domain to Vercel if provided
+      if (newDomain && newDomain !== oldDomain) {
+        const result = await addDomainToVercel(newDomain);
+        if (!result.success) {
+          console.error("Failed to add domain to Vercel:", result.error);
+          // Don't fail the request, just log it - domain can be added manually
+        }
       }
     }
 
