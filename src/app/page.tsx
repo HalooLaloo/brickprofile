@@ -163,7 +163,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 mb-6">
@@ -203,7 +203,7 @@ export default function LandingPage() {
             </p>
 
             {/* Trust badges */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-dark-500 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-dark-500 text-sm mb-16">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span>Setup in 10 minutes</span>
@@ -215,6 +215,111 @@ export default function LandingPage() {
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 <span>Join 500+ contractors</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Hero Preview Mockup */}
+          <div className="relative max-w-5xl mx-auto">
+            {/* Glow effects */}
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
+
+            {/* Browser mockup */}
+            <div className="relative rounded-xl overflow-hidden border border-dark-700 bg-dark-900 shadow-2xl">
+              {/* Browser header */}
+              <div className="flex items-center gap-2 px-4 py-3 bg-dark-800 border-b border-dark-700">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <div className="px-4 py-1 rounded-md bg-dark-700 text-dark-400 text-xs">
+                    demo.brickprofile.com
+                  </div>
+                </div>
+              </div>
+
+              {/* Content preview */}
+              <div className="p-6 sm:p-8 bg-gradient-to-b from-dark-900 to-dark-950">
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {/* Left side - text preview */}
+                  <div className="space-y-4">
+                    <div className="h-3 w-32 bg-brand-500/30 rounded" />
+                    <div className="h-8 w-64 bg-dark-700 rounded" />
+                    <div className="space-y-2">
+                      <div className="h-3 w-full bg-dark-800 rounded" />
+                      <div className="h-3 w-5/6 bg-dark-800 rounded" />
+                      <div className="h-3 w-4/6 bg-dark-800 rounded" />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <div className="h-10 w-28 bg-brand-500 rounded-lg" />
+                      <div className="h-10 w-28 bg-dark-700 rounded-lg" />
+                    </div>
+                  </div>
+
+                  {/* Right side - image grid preview */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
+                      <Camera className="w-8 h-8 text-dark-600" />
+                    </div>
+                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
+                      <Camera className="w-8 h-8 text-dark-600" />
+                    </div>
+                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
+                      <Camera className="w-8 h-8 text-dark-600" />
+                    </div>
+                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
+                      <Camera className="w-8 h-8 text-dark-600" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-dark-800">
+                  <div className="text-center">
+                    <div className="h-6 w-12 bg-dark-700 rounded mx-auto mb-1" />
+                    <div className="h-3 w-16 bg-dark-800 rounded mx-auto" />
+                  </div>
+                  <div className="text-center">
+                    <div className="h-6 w-12 bg-dark-700 rounded mx-auto mb-1" />
+                    <div className="h-3 w-16 bg-dark-800 rounded mx-auto" />
+                  </div>
+                  <div className="text-center">
+                    <div className="h-6 w-12 bg-dark-700 rounded mx-auto mb-1" />
+                    <div className="h-3 w-16 bg-dark-800 rounded mx-auto" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating badges */}
+            <div className="absolute -left-4 top-1/4 transform -translate-x-full hidden lg:block animate-float">
+              <div className="card p-3 shadow-xl">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-dark-400">AI Generated</p>
+                    <p className="text-sm font-medium">Content Ready</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute -right-4 top-1/3 transform translate-x-full hidden lg:block animate-float" style={{ animationDelay: "0.5s" }}>
+              <div className="card p-3 shadow-xl">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                    <Star className="w-4 h-4 text-yellow-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-dark-400">5.0 Rating</p>
+                    <p className="text-sm font-medium">Client Reviews</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

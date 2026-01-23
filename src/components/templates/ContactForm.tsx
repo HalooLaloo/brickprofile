@@ -1,18 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Send, CheckCircle } from "lucide-react";
+import { Loader2, Send, CheckCircle, ChevronDown } from "lucide-react";
+
+interface Service {
+  name: string;
+  description?: string;
+}
 
 interface ContactFormProps {
   siteId: string;
   primaryColor: string;
+  services?: Service[];
 }
 
-export function ContactForm({ siteId, primaryColor }: ContactFormProps) {
+export function ContactForm({ siteId, primaryColor, services = [] }: ContactFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
+    service: "",
     message: "",
   });
   const [loading, setLoading] = useState(false);
@@ -36,7 +43,7 @@ export function ContactForm({ siteId, primaryColor }: ContactFormProps) {
 
       if (response.ok) {
         setSuccess(true);
-        setFormData({ name: "", email: "", phone: "", message: "" });
+        setFormData({ name: "", email: "", phone: "", service: "", message: "" });
       } else {
         const data = await response.json();
         setError(data.error || "Failed to send message");
@@ -114,6 +121,30 @@ export function ContactForm({ siteId, primaryColor }: ContactFormProps) {
           />
         </div>
       </div>
+
+      {services.length > 0 && (
+        <div>
+          <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">
+            Service Interested In
+          </label>
+          <div className="relative">
+            <select
+              id="service"
+              value={formData.service}
+              onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent appearance-none bg-white"
+            >
+              <option value="">Select a service (optional)</option>
+              {services.map((service, index) => (
+                <option key={index} value={service.name}>
+                  {service.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+      )}
 
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">

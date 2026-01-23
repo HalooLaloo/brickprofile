@@ -9,7 +9,7 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { siteId, name, email, phone, message, source = "contact_form" } = body;
+    const { siteId, name, email, phone, service, message, source = "contact_form" } = body;
 
     if (!siteId || !name) {
       return NextResponse.json(
@@ -42,6 +42,11 @@ export async function POST(request: Request) {
       );
     }
 
+    // Combine service with message if provided
+    const fullMessage = service
+      ? `Service interested in: ${service}\n\n${message || ""}`.trim()
+      : message;
+
     // Save the lead
     const { data: lead, error: leadError } = await supabase
       .from("ps_leads")
@@ -50,7 +55,7 @@ export async function POST(request: Request) {
         name,
         email,
         phone,
-        message,
+        message: fullMessage,
         source,
       })
       .select()
@@ -71,7 +76,7 @@ export async function POST(request: Request) {
         await resend.emails.send({
           from: "BrickProfile <notifications@brickprofile.com>",
           to: profile.email,
-          subject: `New contact from ${name} - ${site.company_name}`,
+          subject: `New contact from ${name}${service ? ` - ${service}` : ""} - ${site.company_name}`,
           html: `
             <h2>New Contact Request</h2>
             <p>Someone contacted you through your BrickProfile portfolio!</p>
@@ -79,9 +84,10 @@ export async function POST(request: Request) {
             <p><strong>Name:</strong> ${name}</p>
             ${email ? `<p><strong>Email:</strong> ${email}</p>` : ""}
             ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ""}
+            ${service ? `<p><strong>Service Interested In:</strong> ${service}</p>` : ""}
             ${message ? `<p><strong>Message:</strong></p><p>${message}</p>` : ""}
             <hr>
-            <p><a href="https://brickprofile-gamma.vercel.app/leads">View all leads in dashboard</a></p>
+            <p><a href="https://brickprofile.com/leads">View all leads in dashboard</a></p>
           `,
         });
       } catch (emailError) {

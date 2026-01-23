@@ -66,6 +66,7 @@ export async function POST(request: Request) {
       photos,
       template,
       primaryColor,
+      logo_url,
     } = body;
 
     // Convert areas to array if it's a string (e.g., "Sydney, 30km radius")
@@ -103,6 +104,7 @@ export async function POST(request: Request) {
         email,
         template: template || "classic",
         primary_color: primaryColor || "#3b82f6",
+        logo_url: logo_url || null,
         is_published: true,
       })
       .select()

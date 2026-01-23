@@ -6,6 +6,7 @@ import { StepIndicator } from "@/components/onboarding/StepIndicator";
 import { ChatBubble } from "@/components/onboarding/ChatBubble";
 import { PhotoUploader } from "@/components/onboarding/PhotoUploader";
 import { TemplateSelector } from "@/components/onboarding/TemplateSelector";
+import { LogoUploader } from "@/components/onboarding/LogoUploader";
 import {
   ArrowRight,
   ArrowLeft,
@@ -154,6 +155,7 @@ export default function OnboardingPage() {
   const [selectedTemplate, setSelectedTemplate] =
     useState<Site["template"]>("classic");
   const [primaryColor, setPrimaryColor] = useState("#3b82f6");
+  const [logo, setLogo] = useState<string | null>(null);
 
   // Generated content from AI
   const [generatedContent, setGeneratedContent] = useState<{
@@ -392,6 +394,7 @@ export default function OnboardingPage() {
           })),
           template: selectedTemplate,
           primaryColor,
+          logo_url: logo,
         }),
       });
 
@@ -628,21 +631,31 @@ export default function OnboardingPage() {
               onSelect={setSelectedTemplate}
             />
 
-            <div className="mt-6">
-              <label className="label">Primary Color</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="w-12 h-12 rounded-lg cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="input w-32"
-                />
+            <div className="mt-6 grid sm:grid-cols-2 gap-6">
+              <div>
+                <label className="label">Company Logo (optional)</label>
+                <LogoUploader logo={logo} onLogoChange={setLogo} />
+                <p className="text-xs text-dark-500 mt-2">
+                  PNG, JPG, or SVG. Max 5MB.
+                </p>
+              </div>
+
+              <div>
+                <label className="label">Primary Color</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    className="w-12 h-12 rounded-lg cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    className="input w-32"
+                  />
+                </div>
               </div>
             </div>
           </div>

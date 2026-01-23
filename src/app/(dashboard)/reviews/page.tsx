@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { ReviewsManager } from "@/components/reviews/ReviewsManager";
+import { GoogleReviewsLink } from "@/components/reviews/GoogleReviewsLink";
 import { PLAN_LIMITS } from "@/lib/types";
 
 export default async function ReviewsPage() {
@@ -23,7 +24,7 @@ export default async function ReviewsPage() {
   if (activeSiteId) {
     const { data } = await supabase
       .from("ps_sites")
-      .select("id")
+      .select("id, google_reviews_url")
       .eq("id", activeSiteId)
       .eq("user_id", user.id)
       .single();
@@ -34,7 +35,7 @@ export default async function ReviewsPage() {
   if (!site) {
     const { data } = await supabase
       .from("ps_sites")
-      .select("id")
+      .select("id, google_reviews_url")
       .eq("user_id", user.id)
       .order("created_at", { ascending: true })
       .limit(1)
@@ -64,14 +65,21 @@ export default async function ReviewsPage() {
   const maxReviews = isPro ? PLAN_LIMITS.pro.maxReviews : PLAN_LIMITS.free.maxReviews;
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-6">
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div>
         <h1 className="text-2xl font-bold mb-2">Reviews & Testimonials</h1>
         <p className="text-dark-400">
           Add customer reviews to build trust with potential clients.
           {!isPro && ` Free plan: ${reviews?.length || 0}/${maxReviews} reviews.`}
         </p>
       </div>
+
+      {/* Google Reviews Link (Pro feature) */}
+      <GoogleReviewsLink
+        siteId={site.id}
+        initialUrl={site.google_reviews_url}
+        isPro={isPro}
+      />
 
       <ReviewsManager
         initialReviews={reviews || []}

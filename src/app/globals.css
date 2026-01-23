@@ -163,6 +163,33 @@
   animation: spin-slow 3s linear infinite;
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(-100%);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-100%);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float-right {
+  0%, 100% {
+    transform: translateY(0px) translateX(100%);
+  }
+  50% {
+    transform: translateY(-10px) translateX(100%);
+  }
+}
+
+[style*="animationDelay"] .animate-float,
+.animate-float[style*="animation-delay"] {
+  animation: float-right 3s ease-in-out infinite;
+}
+
 /* Focus visible styles */
 *:focus-visible {
   @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-dark-950;

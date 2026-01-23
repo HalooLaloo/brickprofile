@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Phone,
   Mail,
@@ -10,12 +10,40 @@ import {
   ChevronRight,
   ArrowRight,
 } from "lucide-react";
-import type { TemplateProps } from "@/lib/types";
+import type { TemplateProps, Photo } from "@/lib/types";
+import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 
 export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
 
   const primaryColor = site.primary_color || "#3b82f6";
+
+  // Separate before/after pairs from regular photos
+  const { beforeAfterPairs, regularPhotos } = useMemo(() => {
+    const pairs: { before: Photo; after: Photo }[] = [];
+    const regular: Photo[] = [];
+    const processedPairIds = new Set<string>();
+
+    photos.forEach((photo) => {
+      if (photo.is_before_after && photo.pair_id) {
+        if (!processedPairIds.has(photo.pair_id)) {
+          const pairedPhoto = photos.find(
+            (p) => p.pair_id === photo.pair_id && p.id !== photo.id
+          );
+          if (pairedPhoto) {
+            const beforePhoto = photo.is_before ? photo : pairedPhoto;
+            const afterPhoto = photo.is_before ? pairedPhoto : photo;
+            pairs.push({ before: beforePhoto, after: afterPhoto });
+            processedPairIds.add(photo.pair_id);
+          }
+        }
+      } else if (!photo.is_before_after) {
+        regular.push(photo);
+      }
+    });
+
+    return { beforeAfterPairs: pairs, regularPhotos: regular };
+  }, [photos]);
 
   return (
     <div className="min-h-screen bg-dark-950">
@@ -108,21 +136,50 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
             <h2 className="text-sm font-medium text-dark-500 uppercase tracking-wide mb-8">
               Work
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {photos.map((photo, index) => (
-                <button
-                  key={photo.id}
-                  onClick={() => setSelectedPhoto(index)}
-                  className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
-                >
-                  <img
-                    src={photo.url}
-                    alt={photo.caption || ""}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+
+            {/* Before/After Transformations */}
+            {beforeAfterPairs.length > 0 && (
+              <div className="mb-12">
+                <h3 className="text-sm font-medium text-dark-400 uppercase tracking-wide mb-6">
+                  Transformations
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {beforeAfterPairs.map((pair, index) => (
+                    <div key={pair.before.pair_id || index}>
+                      <BeforeAfterSlider
+                        beforeImage={pair.before.url}
+                        afterImage={pair.after.url}
+                        beforeLabel="Before"
+                        afterLabel="After"
+                      />
+                      {(pair.before.caption || pair.after.caption) && (
+                        <p className="text-sm text-dark-500 mt-2 text-center">
+                          {pair.after.caption || pair.before.caption}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {regularPhotos.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {regularPhotos.map((photo, index) => (
+                  <button
+                    key={photo.id}
+                    onClick={() => setSelectedPhoto(index)}
+                    className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={photo.url}
+                      alt={photo.caption || ""}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -204,7 +261,7 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
       </footer>
 
       {/* Lightbox */}
-      {selectedPhoto !== null && (
+      {selectedPhoto !== null && regularPhotos[selectedPhoto] && (
         <div
           className="fixed inset-0 z-50 bg-dark-950 flex items-center justify-center"
           onClick={() => setSelectedPhoto(null)}
@@ -213,7 +270,7 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
             onClick={(e) => {
               e.stopPropagation();
               setSelectedPhoto(
-                selectedPhoto > 0 ? selectedPhoto - 1 : photos.length - 1
+                selectedPhoto > 0 ? selectedPhoto - 1 : regularPhotos.length - 1
               );
             }}
             className="absolute left-6 text-dark-500 hover:text-white transition-colors"
@@ -223,13 +280,13 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
 
           <div className="max-w-6xl px-16" onClick={(e) => e.stopPropagation()}>
             <img
-              src={photos[selectedPhoto].url}
-              alt={photos[selectedPhoto].caption || ""}
+              src={regularPhotos[selectedPhoto].url}
+              alt={regularPhotos[selectedPhoto].caption || ""}
               className="max-w-full max-h-[90vh] object-contain"
             />
-            {photos[selectedPhoto].caption && (
+            {regularPhotos[selectedPhoto].caption && (
               <p className="text-center mt-6 text-dark-500">
-                {photos[selectedPhoto].caption}
+                {regularPhotos[selectedPhoto].caption}
               </p>
             )}
           </div>
@@ -238,7 +295,7 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
             onClick={(e) => {
               e.stopPropagation();
               setSelectedPhoto(
-                selectedPhoto < photos.length - 1 ? selectedPhoto + 1 : 0
+                selectedPhoto < regularPhotos.length - 1 ? selectedPhoto + 1 : 0
               );
             }}
             className="absolute right-6 text-dark-500 hover:text-white transition-colors"

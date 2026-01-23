@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Phone,
   Mail,
@@ -12,16 +12,44 @@ import {
   Check,
   MessageSquare,
 } from "lucide-react";
-import type { TemplateProps } from "@/lib/types";
+import type { TemplateProps, Photo } from "@/lib/types";
 import { ContactForm } from "./ContactForm";
+import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 
 export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
 
   const primaryColor = site.primary_color || "#3b82f6";
 
+  // Separate before/after pairs from regular photos
+  const { beforeAfterPairs, regularPhotos } = useMemo(() => {
+    const pairs: { before: Photo; after: Photo }[] = [];
+    const regular: Photo[] = [];
+    const processedPairIds = new Set<string>();
+
+    photos.forEach((photo) => {
+      if (photo.is_before_after && photo.pair_id) {
+        if (!processedPairIds.has(photo.pair_id)) {
+          const pairedPhoto = photos.find(
+            (p) => p.pair_id === photo.pair_id && p.id !== photo.id
+          );
+          if (pairedPhoto) {
+            const beforePhoto = photo.is_before ? photo : pairedPhoto;
+            const afterPhoto = photo.is_before ? pairedPhoto : photo;
+            pairs.push({ before: beforePhoto, after: afterPhoto });
+            processedPairIds.add(photo.pair_id);
+          }
+        }
+      } else if (!photo.is_before_after) {
+        regular.push(photo);
+      }
+    });
+
+    return { beforeAfterPairs: pairs, regularPhotos: regular };
+  }, [photos]);
+
   // Group photos by category
-  const categories = Array.from(new Set(photos.map((p) => p.category)));
+  const categories = Array.from(new Set(regularPhotos.map((p) => p.category)));
 
   return (
     <div className="min-h-screen bg-dark-950">
@@ -132,6 +160,33 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
           <div className="max-w-6xl mx-auto">
             <h3 className="text-2xl font-bold mb-8 text-center">Our Work</h3>
 
+            {/* Before/After Transformations */}
+            {beforeAfterPairs.length > 0 && (
+              <div className="mb-12">
+                <h4 className="text-lg font-semibold mb-6 text-center text-dark-300">
+                  Transformations
+                </h4>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {beforeAfterPairs.map((pair, index) => (
+                    <div key={pair.before.pair_id || index}>
+                      <BeforeAfterSlider
+                        beforeImage={pair.before.url}
+                        afterImage={pair.after.url}
+                        beforeLabel="Before"
+                        afterLabel="After"
+                        className="rounded-xl"
+                      />
+                      {(pair.before.caption || pair.after.caption) && (
+                        <p className="text-sm text-dark-400 mt-2 text-center">
+                          {pair.after.caption || pair.before.caption}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Category filters */}
             {categories.length > 1 && (
               <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -147,21 +202,23 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
             )}
 
             {/* Photo grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {photos.map((photo, index) => (
-                <button
-                  key={photo.id}
-                  onClick={() => setSelectedPhoto(index)}
-                  className="aspect-square rounded-xl overflow-hidden bg-dark-800 hover:opacity-90 transition-opacity"
-                >
-                  <img
-                    src={photo.url}
-                    alt={photo.caption || "Portfolio photo"}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+            {regularPhotos.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {regularPhotos.map((photo, index) => (
+                  <button
+                    key={photo.id}
+                    onClick={() => setSelectedPhoto(index)}
+                    className="aspect-square rounded-xl overflow-hidden bg-dark-800 hover:opacity-90 transition-opacity"
+                  >
+                    <img
+                      src={photo.url}
+                      alt={photo.caption || "Portfolio photo"}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -301,7 +358,11 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
             {/* Contact Form */}
             <div className="bg-white rounded-xl p-6 text-dark-900">
               <h4 className="font-semibold text-lg mb-4">Send us a message</h4>
-              <ContactForm siteId={site.id} primaryColor={primaryColor} />
+              <ContactForm
+                siteId={site.id}
+                primaryColor={primaryColor}
+                services={site.services as { name: string; description?: string }[] || []}
+              />
             </div>
           </div>
         </div>
@@ -319,7 +380,7 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
       </footer>
 
       {/* Lightbox */}
-      {selectedPhoto !== null && (
+      {selectedPhoto !== null && regularPhotos[selectedPhoto] && (
         <div
           className="fixed inset-0 z-50 bg-dark-950/95 flex items-center justify-center p-4"
           onClick={() => setSelectedPhoto(null)}
@@ -328,7 +389,7 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
             onClick={(e) => {
               e.stopPropagation();
               setSelectedPhoto(
-                selectedPhoto > 0 ? selectedPhoto - 1 : photos.length - 1
+                selectedPhoto > 0 ? selectedPhoto - 1 : regularPhotos.length - 1
               );
             }}
             className="absolute left-4 p-2 rounded-full bg-dark-800 hover:bg-dark-700"
@@ -338,13 +399,13 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
 
           <div className="max-w-4xl max-h-[80vh]" onClick={(e) => e.stopPropagation()}>
             <img
-              src={photos[selectedPhoto].url}
-              alt={photos[selectedPhoto].caption || "Portfolio photo"}
+              src={regularPhotos[selectedPhoto].url}
+              alt={regularPhotos[selectedPhoto].caption || "Portfolio photo"}
               className="max-w-full max-h-[80vh] object-contain rounded-lg"
             />
-            {photos[selectedPhoto].caption && (
+            {regularPhotos[selectedPhoto].caption && (
               <p className="text-center mt-4 text-dark-300">
-                {photos[selectedPhoto].caption}
+                {regularPhotos[selectedPhoto].caption}
               </p>
             )}
           </div>
@@ -353,7 +414,7 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
             onClick={(e) => {
               e.stopPropagation();
               setSelectedPhoto(
-                selectedPhoto < photos.length - 1 ? selectedPhoto + 1 : 0
+                selectedPhoto < regularPhotos.length - 1 ? selectedPhoto + 1 : 0
               );
             }}
             className="absolute right-4 p-2 rounded-full bg-dark-800 hover:bg-dark-700"

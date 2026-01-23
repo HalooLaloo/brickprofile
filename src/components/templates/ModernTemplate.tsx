@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Phone,
   Mail,
@@ -11,12 +11,40 @@ import {
   ArrowRight,
   MessageSquare,
 } from "lucide-react";
-import type { TemplateProps } from "@/lib/types";
+import type { TemplateProps, Photo } from "@/lib/types";
+import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
 
 export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
 
   const primaryColor = site.primary_color || "#3b82f6";
+
+  // Separate before/after pairs from regular photos
+  const { beforeAfterPairs, regularPhotos } = useMemo(() => {
+    const pairs: { before: Photo; after: Photo }[] = [];
+    const regular: Photo[] = [];
+    const processedPairIds = new Set<string>();
+
+    photos.forEach((photo) => {
+      if (photo.is_before_after && photo.pair_id) {
+        if (!processedPairIds.has(photo.pair_id)) {
+          const pairedPhoto = photos.find(
+            (p) => p.pair_id === photo.pair_id && p.id !== photo.id
+          );
+          if (pairedPhoto) {
+            const beforePhoto = photo.is_before ? photo : pairedPhoto;
+            const afterPhoto = photo.is_before ? pairedPhoto : photo;
+            pairs.push({ before: beforePhoto, after: afterPhoto });
+            processedPairIds.add(photo.pair_id);
+          }
+        }
+      } else if (!photo.is_before_after) {
+        regular.push(photo);
+      }
+    });
+
+    return { beforeAfterPairs: pairs, regularPhotos: regular };
+  }, [photos]);
 
   return (
     <div className="min-h-screen bg-dark-950">
@@ -184,21 +212,51 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
               </p>
               <h2 className="text-4xl font-bold">Featured Projects</h2>
             </div>
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-              {photos.map((photo, index) => (
-                <button
-                  key={photo.id}
-                  onClick={() => setSelectedPhoto(index)}
-                  className="w-full rounded-2xl overflow-hidden hover:opacity-90 transition-opacity break-inside-avoid"
-                >
-                  <img
-                    src={photo.url}
-                    alt={photo.caption || "Portfolio photo"}
-                    className="w-full"
-                  />
-                </button>
-              ))}
-            </div>
+
+            {/* Before/After Transformations */}
+            {beforeAfterPairs.length > 0 && (
+              <div className="mb-16">
+                <h3 className="text-xl font-semibold text-center mb-8 text-dark-300">
+                  Transformations
+                </h3>
+                <div className="grid md:grid-cols-2 gap-8">
+                  {beforeAfterPairs.map((pair, index) => (
+                    <div key={pair.before.pair_id || index}>
+                      <BeforeAfterSlider
+                        beforeImage={pair.before.url}
+                        afterImage={pair.after.url}
+                        beforeLabel="Before"
+                        afterLabel="After"
+                        className="rounded-2xl"
+                      />
+                      {(pair.before.caption || pair.after.caption) && (
+                        <p className="text-sm text-dark-400 mt-3 text-center">
+                          {pair.after.caption || pair.before.caption}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {regularPhotos.length > 0 && (
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                {regularPhotos.map((photo, index) => (
+                  <button
+                    key={photo.id}
+                    onClick={() => setSelectedPhoto(index)}
+                    className="w-full rounded-2xl overflow-hidden hover:opacity-90 transition-opacity break-inside-avoid"
+                  >
+                    <img
+                      src={photo.url}
+                      alt={photo.caption || "Portfolio photo"}
+                      className="w-full"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -310,7 +368,7 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
       </footer>
 
       {/* Lightbox */}
-      {selectedPhoto !== null && (
+      {selectedPhoto !== null && regularPhotos[selectedPhoto] && (
         <div
           className="fixed inset-0 z-50 bg-dark-950/95 flex items-center justify-center p-4"
           onClick={() => setSelectedPhoto(null)}
@@ -319,7 +377,7 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
             onClick={(e) => {
               e.stopPropagation();
               setSelectedPhoto(
-                selectedPhoto > 0 ? selectedPhoto - 1 : photos.length - 1
+                selectedPhoto > 0 ? selectedPhoto - 1 : regularPhotos.length - 1
               );
             }}
             className="absolute left-4 p-3 rounded-full bg-dark-800 hover:bg-dark-700"
@@ -329,8 +387,8 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
 
           <div className="max-w-5xl" onClick={(e) => e.stopPropagation()}>
             <img
-              src={photos[selectedPhoto].url}
-              alt={photos[selectedPhoto].caption || ""}
+              src={regularPhotos[selectedPhoto].url}
+              alt={regularPhotos[selectedPhoto].caption || ""}
               className="max-w-full max-h-[85vh] object-contain rounded-2xl"
             />
           </div>
@@ -339,7 +397,7 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
             onClick={(e) => {
               e.stopPropagation();
               setSelectedPhoto(
-                selectedPhoto < photos.length - 1 ? selectedPhoto + 1 : 0
+                selectedPhoto < regularPhotos.length - 1 ? selectedPhoto + 1 : 0
               );
             }}
             className="absolute right-4 p-3 rounded-full bg-dark-800 hover:bg-dark-700"
