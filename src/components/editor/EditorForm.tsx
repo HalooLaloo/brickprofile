@@ -489,14 +489,14 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
         </div>
       </div>
 
-      {/* QuoteSnap Integration */}
+      {/* BrickQuote Integration */}
       <div className="card p-6">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <ExternalLink className="w-5 h-5 text-brand-400" />
-          QuoteSnap Integration
+          BrickQuote Integration
         </h2>
         <p className="text-sm text-dark-400 mb-4">
-          Connect your BrickProfile portfolio with QuoteSnap to let visitors request quotes directly.
+          Connect your BrickProfile portfolio with BrickQuote to let visitors request quotes directly.
         </p>
         <div className="space-y-4">
           <label className="flex items-center gap-3 cursor-pointer">
@@ -517,7 +517,7 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
 
           {formData.show_quote_button && (
             <div className="ml-8 p-4 bg-dark-800/50 rounded-lg border border-dark-700">
-              <label className="label">QuoteSnap User ID</label>
+              <label className="label">BrickQuote User ID</label>
               <input
                 type="text"
                 name="quotesnap_user_id"
@@ -527,11 +527,11 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
                 placeholder="e.g., abc123-def456-..."
               />
               <p className="text-xs text-dark-500 mt-2">
-                Find your User ID in QuoteSnap → Settings → Account. The &quot;Get Quote&quot; button will link to your QuoteSnap request form.
+                Find your User ID in BrickQuote → Settings → Account. The &quot;Get Quote&quot; button will link to your BrickQuote request form.
               </p>
               {!formData.quotesnap_user_id && (
                 <p className="text-xs text-amber-400 mt-2">
-                  Enter your QuoteSnap User ID to enable the button on your portfolio.
+                  Enter your BrickQuote User ID to enable the button on your portfolio.
                 </p>
               )}
               {formData.quotesnap_user_id && (

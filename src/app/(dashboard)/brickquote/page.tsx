@@ -51,13 +51,13 @@ const features = [
 const steps = [
   {
     number: "1",
-    title: "Sign up for QuoteSnap",
-    description: "Create your free QuoteSnap account at quotesnap.pro",
+    title: "Sign up for BrickQuote",
+    description: "Create your free BrickQuote account at quotesnap.pro",
   },
   {
     number: "2",
     title: "Get your User ID",
-    description: "Find your User ID in QuoteSnap Settings → Account",
+    description: "Find your User ID in BrickQuote Settings → Account",
   },
   {
     number: "3",
@@ -66,7 +66,7 @@ const steps = [
   },
 ];
 
-export default function QuoteSnapPage() {
+export default function BrickQuotePage() {
   const [site, setSite] = useState<SiteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -148,13 +148,13 @@ export default function QuoteSnapPage() {
       <div className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
           <Zap className="w-4 h-4 text-amber-400" />
-          <span className="text-sm text-amber-400 font-medium">Powered by QuoteSnap</span>
+          <span className="text-sm text-amber-400 font-medium">Powered by BrickQuote</span>
         </div>
         <h1 className="text-3xl font-bold mb-4">
           Get More Quotes with AI
         </h1>
         <p className="text-dark-400 max-w-xl mx-auto">
-          QuoteSnap is an AI-powered quote request system that helps contractors receive detailed project requests from potential customers.
+          BrickQuote is an AI-powered quote request system that helps contractors receive detailed project requests from potential customers.
         </p>
       </div>
 
@@ -171,7 +171,7 @@ export default function QuoteSnapPage() {
 
       {/* How it works */}
       <div className="card p-6">
-        <h2 className="text-lg font-semibold mb-6">How to Connect QuoteSnap</h2>
+        <h2 className="text-lg font-semibold mb-6">How to Connect BrickQuote</h2>
         <div className="space-y-6">
           {steps.map((step, index) => (
             <div key={step.number} className="flex gap-4">
@@ -188,7 +188,7 @@ export default function QuoteSnapPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 mt-2"
                   >
-                    Go to QuoteSnap
+                    Go to BrickQuote
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
@@ -227,7 +227,7 @@ export default function QuoteSnapPage() {
           {showQuoteButton && (
             <div className="ml-8 p-4 bg-dark-800/50 rounded-lg border border-dark-700 space-y-4">
               <div>
-                <label className="label">QuoteSnap User ID</label>
+                <label className="label">BrickQuote User ID</label>
                 <input
                   type="text"
                   value={quotesnapUserId}
@@ -236,10 +236,10 @@ export default function QuoteSnapPage() {
                     setSaved(false);
                   }}
                   className="input"
-                  placeholder="Paste your User ID from QuoteSnap"
+                  placeholder="Paste your User ID from BrickQuote"
                 />
                 <p className="text-xs text-dark-500 mt-1">
-                  Find this in QuoteSnap → Settings → Account
+                  Find this in BrickQuote → Settings → Account
                 </p>
               </div>
 
@@ -302,7 +302,7 @@ export default function QuoteSnapPage() {
       {/* CTA */}
       <div className="text-center py-8">
         <p className="text-dark-400 mb-4">
-          Don't have a QuoteSnap account yet?
+          Don't have a BrickQuote account yet?
         </p>
         <a
           href="https://quotesnap.pro"
@@ -311,7 +311,7 @@ export default function QuoteSnapPage() {
           className="btn-secondary btn-lg"
         >
           <Zap className="w-5 h-5 mr-2" />
-          Sign Up for QuoteSnap - Free
+          Sign Up for BrickQuote - Free
           <ArrowRight className="w-5 h-5 ml-2" />
         </a>
       </div>
