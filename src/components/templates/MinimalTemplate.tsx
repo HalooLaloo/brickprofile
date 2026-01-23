@@ -41,9 +41,18 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
             {site.headline || site.company_name}
           </h1>
           {site.service_areas && site.service_areas.length > 0 && (
-            <p className="text-dark-400">
+            <p className="text-dark-400 mb-6">
               Serving {site.service_areas.join(", ")}
             </p>
+          )}
+          {site.show_quote_button && site.quotesnap_user_id && (
+            <a
+              href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL}/request/${site.quotesnap_user_id}`}
+              className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border border-dark-600 hover:border-white rounded"
+            >
+              Get a Quote
+              <ArrowRight className="w-4 h-4" />
+            </a>
           )}
         </div>
       </section>

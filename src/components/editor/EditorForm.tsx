@@ -54,6 +54,7 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
     primary_color: site.primary_color || "#3b82f6",
     is_published: site.is_published,
     show_quote_button: site.show_quote_button,
+    quotesnap_user_id: site.quotesnap_user_id || "",
   });
   const [slugError, setSlugError] = useState("");
 
@@ -485,6 +486,19 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
               </p>
             </div>
           </label>
+        </div>
+      </div>
+
+      {/* QuoteSnap Integration */}
+      <div className="card p-6">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <ExternalLink className="w-5 h-5 text-brand-400" />
+          QuoteSnap Integration
+        </h2>
+        <p className="text-sm text-dark-400 mb-4">
+          Connect your BrickProfile portfolio with QuoteSnap to let visitors request quotes directly.
+        </p>
+        <div className="space-y-4">
           <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
@@ -496,10 +510,42 @@ export function EditorForm({ site, isPro }: EditorFormProps) {
             <div>
               <p className="font-medium">Show &quot;Get Quote&quot; Button</p>
               <p className="text-sm text-dark-400">
-                Connect to QuoteSnap for instant quotes
+                Display a prominent button on your portfolio for instant quote requests
               </p>
             </div>
           </label>
+
+          {formData.show_quote_button && (
+            <div className="ml-8 p-4 bg-dark-800/50 rounded-lg border border-dark-700">
+              <label className="label">QuoteSnap User ID</label>
+              <input
+                type="text"
+                name="quotesnap_user_id"
+                value={formData.quotesnap_user_id}
+                onChange={handleChange}
+                className="input"
+                placeholder="e.g., abc123-def456-..."
+              />
+              <p className="text-xs text-dark-500 mt-2">
+                Find your User ID in QuoteSnap → Settings → Account. The &quot;Get Quote&quot; button will link to your QuoteSnap request form.
+              </p>
+              {!formData.quotesnap_user_id && (
+                <p className="text-xs text-amber-400 mt-2">
+                  Enter your QuoteSnap User ID to enable the button on your portfolio.
+                </p>
+              )}
+              {formData.quotesnap_user_id && (
+                <a
+                  href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL || 'https://quotesnap.pro'}/request/${formData.quotesnap_user_id}`}
+                  target="_blank"
+                  className="inline-flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 mt-2"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  Test your quote request link
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
