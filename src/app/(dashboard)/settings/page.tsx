@@ -22,7 +22,7 @@ export default async function SettingsPage() {
   // Get site
   const { data: site } = await supabase
     .from("ps_sites")
-    .select("slug, custom_domain")
+    .select("id, slug, custom_domain")
     .eq("user_id", user.id)
     .single();
 

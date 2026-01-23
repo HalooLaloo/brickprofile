@@ -11,6 +11,10 @@ import {
   Crown,
   ExternalLink,
   Check,
+  Copy,
+  AlertCircle,
+  CheckCircle2,
+  RefreshCw,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
@@ -18,13 +22,19 @@ import type { Profile } from "@/lib/types";
 interface SettingsFormProps {
   user: { email: string; id: string };
   profile: Profile | null;
-  site: { slug: string; custom_domain: string | null } | null;
+  site: { slug: string; custom_domain: string | null; id?: string } | null;
 }
 
 export function SettingsForm({ user, profile, site }: SettingsFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [customDomain, setCustomDomain] = useState(site?.custom_domain || "");
+  const [domainSaving, setDomainSaving] = useState(false);
+  const [domainVerifying, setDomainVerifying] = useState(false);
+  const [domainStatus, setDomainStatus] = useState<"unchecked" | "verified" | "pending" | "error">("unchecked");
+  const [domainError, setDomainError] = useState("");
+  const [copied, setCopied] = useState<string | null>(null);
 
   const isPro = profile?.plan === "pro";
 
@@ -55,6 +65,85 @@ export function SettingsForm({ user, profile, site }: SettingsFormProps) {
     }
 
     setPortalLoading(false);
+  };
+
+  const copyToClipboard = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  const formatDomain = (domain: string) => {
+    // Remove protocol and trailing slash
+    return domain
+      .replace(/^https?:\/\//, "")
+      .replace(/\/$/, "")
+      .toLowerCase()
+      .trim();
+  };
+
+  const handleSaveDomain = async () => {
+    if (!site?.id) return;
+
+    const formattedDomain = formatDomain(customDomain);
+
+    if (formattedDomain && !/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(formattedDomain)) {
+      setDomainError("Please enter a valid domain (e.g., www.yourcompany.com)");
+      return;
+    }
+
+    setDomainSaving(true);
+    setDomainError("");
+
+    try {
+      const response = await fetch("/api/sites", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          site_id: site.id,
+          custom_domain: formattedDomain || null,
+        }),
+      });
+
+      if (response.ok) {
+        setCustomDomain(formattedDomain);
+        setDomainStatus(formattedDomain ? "pending" : "unchecked");
+        router.refresh();
+      } else {
+        const data = await response.json();
+        setDomainError(data.error || "Failed to save domain");
+      }
+    } catch (error) {
+      console.error("Error saving domain:", error);
+      setDomainError("Failed to save domain. Please try again.");
+    }
+
+    setDomainSaving(false);
+  };
+
+  const handleVerifyDomain = async () => {
+    if (!customDomain) return;
+
+    setDomainVerifying(true);
+    setDomainError("");
+
+    try {
+      const response = await fetch(`/api/domain/verify?domain=${encodeURIComponent(customDomain)}`);
+      const data = await response.json();
+
+      if (data.verified) {
+        setDomainStatus("verified");
+      } else {
+        setDomainStatus("pending");
+        setDomainError(data.message || "DNS not configured yet. Please add the CNAME record and try again.");
+      }
+    } catch (error) {
+      console.error("Error verifying domain:", error);
+      setDomainStatus("error");
+      setDomainError("Failed to verify domain. Please try again.");
+    }
+
+    setDomainVerifying(false);
   };
 
   return (
@@ -171,23 +260,135 @@ export function SettingsForm({ user, profile, site }: SettingsFormProps) {
               </div>
             </div>
 
-            {isPro && (
-              <div>
-                <label className="label">Custom Domain</label>
-                <input
-                  type="text"
-                  value={site.custom_domain || ""}
-                  placeholder="www.yourcompany.com"
-                  className="input"
-                  disabled
-                />
-                <p className="text-xs text-dark-500 mt-1">
-                  Contact support to set up your custom domain.
-                </p>
-              </div>
-            )}
+            {isPro ? (
+              <>
+                <div>
+                  <label className="label">Custom Domain</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={customDomain}
+                      onChange={(e) => setCustomDomain(e.target.value)}
+                      placeholder="www.yourcompany.com"
+                      className="input flex-1"
+                    />
+                    <button
+                      onClick={handleSaveDomain}
+                      disabled={domainSaving}
+                      className="btn-primary btn-md"
+                    >
+                      {domainSaving ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Save"
+                      )}
+                    </button>
+                  </div>
+                  {domainError && (
+                    <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {domainError}
+                    </p>
+                  )}
+                </div>
 
-            {!isPro && (
+                {customDomain && (
+                  <>
+                    {/* DNS Instructions */}
+                    <div className="p-4 rounded-lg bg-dark-800/50 border border-dark-700">
+                      <h3 className="font-medium mb-3 text-sm">DNS Configuration</h3>
+                      <p className="text-xs text-dark-400 mb-3">
+                        Add this CNAME record in your domain provider's DNS settings:
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-2 rounded bg-dark-900">
+                          <div className="text-xs">
+                            <span className="text-dark-400">Type:</span>{" "}
+                            <span className="font-mono text-brand-400">CNAME</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between p-2 rounded bg-dark-900">
+                          <div className="text-xs flex-1">
+                            <span className="text-dark-400">Name:</span>{" "}
+                            <span className="font-mono">{customDomain.startsWith("www.") ? "www" : "@"}</span>
+                          </div>
+                          <button
+                            onClick={() => copyToClipboard(customDomain.startsWith("www.") ? "www" : "@", "name")}
+                            className="p-1 hover:bg-dark-700 rounded"
+                          >
+                            {copied === "name" ? (
+                              <Check className="w-3 h-3 text-green-400" />
+                            ) : (
+                              <Copy className="w-3 h-3 text-dark-400" />
+                            )}
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between p-2 rounded bg-dark-900">
+                          <div className="text-xs flex-1">
+                            <span className="text-dark-400">Value:</span>{" "}
+                            <span className="font-mono">cname.vercel-dns.com</span>
+                          </div>
+                          <button
+                            onClick={() => copyToClipboard("cname.vercel-dns.com", "value")}
+                            className="p-1 hover:bg-dark-700 rounded"
+                          >
+                            {copied === "value" ? (
+                              <Check className="w-3 h-3 text-green-400" />
+                            ) : (
+                              <Copy className="w-3 h-3 text-dark-400" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-xs text-dark-500 mt-3">
+                        DNS changes can take up to 48 hours to propagate.
+                      </p>
+                    </div>
+
+                    {/* Verification Status */}
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-dark-800/50">
+                      <div className="flex items-center gap-2">
+                        {domainStatus === "verified" ? (
+                          <>
+                            <CheckCircle2 className="w-5 h-5 text-green-400" />
+                            <span className="text-sm text-green-400">Domain verified</span>
+                          </>
+                        ) : domainStatus === "pending" ? (
+                          <>
+                            <AlertCircle className="w-5 h-5 text-yellow-400" />
+                            <span className="text-sm text-yellow-400">Pending verification</span>
+                          </>
+                        ) : domainStatus === "error" ? (
+                          <>
+                            <AlertCircle className="w-5 h-5 text-red-400" />
+                            <span className="text-sm text-red-400">Verification failed</span>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="w-5 h-5 text-dark-400" />
+                            <span className="text-sm text-dark-400">Not verified</span>
+                          </>
+                        )}
+                      </div>
+                      <button
+                        onClick={handleVerifyDomain}
+                        disabled={domainVerifying}
+                        className="btn-secondary btn-sm"
+                      >
+                        {domainVerifying ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-1" />
+                            Verify
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
               <div className="p-4 rounded-lg bg-brand-500/10 border border-brand-500/20">
                 <p className="text-sm">
                   <Crown className="w-4 h-4 inline mr-1 text-brand-400" />
