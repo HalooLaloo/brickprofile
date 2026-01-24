@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  BrickWall,
   PenSquare,
   Images,
   Star,
@@ -72,8 +71,14 @@ export function Sidebar({ user, profile, sites, activeSite, canCreateMore, maxSi
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:border-r lg:border-dark-800 lg:bg-dark-900/50">
       {/* Logo */}
       <div className="flex items-center gap-2 h-16 px-6 border-b border-dark-800">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-          <BrickWall className="w-5 h-5 text-white" />
+        <div className="w-8 h-8 rounded-lg bg-[#132039] flex items-center justify-center">
+          <svg className="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="2" y="6" width="9" height="5" rx="0.5" />
+            <rect x="13" y="6" width="9" height="5" rx="0.5" />
+            <rect x="6" y="13" width="9" height="5" rx="0.5" />
+            <rect x="17" y="13" width="5" height="5" rx="0.5" />
+            <rect x="2" y="13" width="2" height="5" rx="0.5" />
+          </svg>
         </div>
         <span className="text-lg font-bold">BrickProfile</span>
       </div>

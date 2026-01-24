@@ -20,7 +20,6 @@ import {
   ClipboardList,
   ChevronRight,
   Quote,
-  BrickWall,
   RefreshCw,
   Copy,
   CreditCard,
@@ -137,8 +136,14 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-                <BrickWall className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-lg bg-[#132039] flex items-center justify-center">
+                <svg className="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="2" y="6" width="9" height="5" rx="0.5" />
+                  <rect x="13" y="6" width="9" height="5" rx="0.5" />
+                  <rect x="6" y="13" width="9" height="5" rx="0.5" />
+                  <rect x="17" y="13" width="5" height="5" rx="0.5" />
+                  <rect x="2" y="13" width="2" height="5" rx="0.5" />
+                </svg>
               </div>
               <span className="text-xl font-bold">BrickProfile</span>
             </div>
@@ -685,8 +690,14 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {/* BrickProfile */}
             <div className="card p-6 border-brand-500/50 bg-brand-500/5">
-              <div className="w-12 h-12 rounded-lg bg-brand-500/20 flex items-center justify-center mb-4">
-                <BrickWall className="w-6 h-6 text-brand-400" />
+              <div className="w-12 h-12 rounded-lg bg-[#132039] flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="2" y="6" width="9" height="5" rx="0.5" />
+                  <rect x="13" y="6" width="9" height="5" rx="0.5" />
+                  <rect x="6" y="13" width="9" height="5" rx="0.5" />
+                  <rect x="17" y="13" width="5" height="5" rx="0.5" />
+                  <rect x="2" y="13" width="2" height="5" rx="0.5" />
+                </svg>
               </div>
               <h3 className="text-lg font-semibold mb-2">BrickProfile</h3>
               <p className="text-dark-400 text-sm mb-4">
@@ -791,8 +802,14 @@ export default function LandingPage() {
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-                  <BrickWall className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 rounded-lg bg-[#132039] flex items-center justify-center">
+                  <svg className="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="2" y="6" width="9" height="5" rx="0.5" />
+                    <rect x="13" y="6" width="9" height="5" rx="0.5" />
+                    <rect x="6" y="13" width="9" height="5" rx="0.5" />
+                    <rect x="17" y="13" width="5" height="5" rx="0.5" />
+                    <rect x="2" y="13" width="2" height="5" rx="0.5" />
+                  </svg>
                 </div>
                 <span className="text-lg font-bold">BrickProfile</span>
               </div>
