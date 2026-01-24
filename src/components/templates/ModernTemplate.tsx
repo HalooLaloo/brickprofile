@@ -13,6 +13,7 @@ import {
   Sparkles,
   Clock,
   FileText,
+  ExternalLink,
 } from "lucide-react";
 import type { TemplateProps, Photo } from "@/lib/types";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
@@ -268,7 +269,7 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
       )}
 
       {/* Testimonials - Large quotes */}
-      {reviews.length > 0 && (
+      {(reviews.length > 0 || site.google_reviews_url) && (
         <section className="py-32 px-6 bg-dark-900/30">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
@@ -280,6 +281,25 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
               </p>
               <h2 className="text-4xl font-bold">Client Reviews</h2>
             </div>
+
+            {/* Google Reviews Button */}
+            {site.google_reviews_url && (
+              <div className="text-center mb-12">
+                <a
+                  href={site.google_reviews_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white font-medium transition-all hover:scale-105"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  <Star className="w-5 h-5 fill-current" />
+                  View Our Google Reviews
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            )}
+
+            {reviews.length > 0 && (
             <div className="space-y-8">
               {reviews.slice(0, 3).map((review) => (
                 <div
@@ -323,6 +343,7 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </section>
       )}

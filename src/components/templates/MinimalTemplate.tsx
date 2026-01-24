@@ -13,6 +13,7 @@ import {
   Clock,
   MessageSquare,
   FileText,
+  ExternalLink,
 } from "lucide-react";
 import type { TemplateProps, Photo } from "@/lib/types";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
@@ -193,12 +194,31 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
       )}
 
       {/* Testimonials - Simple quotes */}
-      {reviews.length > 0 && (
+      {(reviews.length > 0 || site.google_reviews_url) && (
         <section className="py-16 px-6 border-t border-dark-800/50">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-sm font-medium text-dark-500 uppercase tracking-wide mb-8">
               Reviews
             </h2>
+
+            {/* Google Reviews Button */}
+            {site.google_reviews_url && (
+              <div className="mb-12">
+                <a
+                  href={site.google_reviews_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm hover:text-dark-300 transition-colors"
+                  style={{ color: primaryColor }}
+                >
+                  <Star className="w-4 h-4" />
+                  View our Google Reviews
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            )}
+
+            {reviews.length > 0 && (
             <div className="space-y-12">
               {reviews.slice(0, 3).map((review) => (
                 <div key={review.id}>
@@ -224,6 +244,7 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </section>
       )}

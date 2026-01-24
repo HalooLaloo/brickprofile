@@ -13,6 +13,7 @@ import {
   Sparkles,
   Clock,
   FileText,
+  ExternalLink,
 } from "lucide-react";
 import type { TemplateProps, Photo } from "@/lib/types";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
@@ -278,12 +279,31 @@ export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
       )}
 
       {/* Testimonials */}
-      {reviews.length > 0 && (
+      {(reviews.length > 0 || site.google_reviews_url) && (
         <section className="py-24 px-6">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-5xl font-black mb-12">
               CLIENT <span style={{ color: primaryColor }}>REVIEWS</span>
             </h2>
+
+            {/* Google Reviews Button */}
+            {site.google_reviews_url && (
+              <div className="mb-12">
+                <a
+                  href={site.google_reviews_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-lg transition-transform hover:scale-105"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  <Star className="w-6 h-6 fill-current" />
+                  VIEW OUR GOOGLE REVIEWS
+                  <ExternalLink className="w-5 h-5" />
+                </a>
+              </div>
+            )}
+
+            {reviews.length > 0 && (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {reviews.map((review) => (
                 <div
@@ -320,6 +340,7 @@ export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </section>
       )}
