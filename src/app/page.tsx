@@ -241,54 +241,76 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Content preview */}
+              {/* Content preview - Real portfolio look */}
               <div className="p-6 sm:p-8 bg-gradient-to-b from-dark-900 to-dark-950">
                 <div className="grid sm:grid-cols-2 gap-6">
-                  {/* Left side - text preview */}
+                  {/* Left side - company info */}
                   <div className="space-y-4">
-                    <div className="h-3 w-32 bg-brand-500/30 rounded" />
-                    <div className="h-8 w-64 bg-dark-700 rounded" />
-                    <div className="space-y-2">
-                      <div className="h-3 w-full bg-dark-800 rounded" />
-                      <div className="h-3 w-5/6 bg-dark-800 rounded" />
-                      <div className="h-3 w-4/6 bg-dark-800 rounded" />
+                    <p className="text-sm font-medium text-brand-400 tracking-wide">SYDNEY & SURROUNDS</p>
+                    <h3 className="text-2xl sm:text-3xl font-bold text-white">Smith Renovations</h3>
+                    <p className="text-dark-400 text-sm leading-relaxed">
+                      Quality bathroom & kitchen renovations with over 15 years of experience.
+                      Fully licensed and insured.
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <span className="px-3 py-1 bg-dark-800 rounded-full text-xs text-dark-300">Bathrooms</span>
+                      <span className="px-3 py-1 bg-dark-800 rounded-full text-xs text-dark-300">Kitchens</span>
+                      <span className="px-3 py-1 bg-dark-800 rounded-full text-xs text-dark-300">Tiling</span>
                     </div>
                     <div className="flex gap-3 pt-2">
-                      <div className="h-10 w-28 bg-brand-500 rounded-lg" />
-                      <div className="h-10 w-28 bg-dark-700 rounded-lg" />
+                      <div className="h-10 px-5 bg-brand-500 rounded-lg flex items-center justify-center text-sm font-medium text-white">
+                        Get Quote
+                      </div>
+                      <div className="h-10 px-5 bg-dark-700 rounded-lg flex items-center justify-center text-sm text-dark-300">
+                        +61 400 123 456
+                      </div>
                     </div>
                   </div>
 
-                  {/* Right side - image grid preview */}
+                  {/* Right side - real portfolio images */}
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-dark-600" />
-                    </div>
-                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-dark-600" />
-                    </div>
-                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-dark-600" />
-                    </div>
-                    <div className="aspect-square bg-gradient-to-br from-dark-700 to-dark-800 rounded-lg flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-dark-600" />
-                    </div>
+                    <img
+                      src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&q=80"
+                      alt="Bathroom renovation"
+                      className="aspect-square object-cover rounded-lg"
+                    />
+                    <img
+                      src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80"
+                      alt="Kitchen renovation"
+                      className="aspect-square object-cover rounded-lg"
+                    />
+                    <img
+                      src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&q=80"
+                      alt="Ensuite renovation"
+                      className="aspect-square object-cover rounded-lg"
+                    />
+                    <img
+                      src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80"
+                      alt="Kitchen design"
+                      className="aspect-square object-cover rounded-lg"
+                    />
                   </div>
                 </div>
 
-                {/* Stats row */}
-                <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-dark-800">
-                  <div className="text-center">
-                    <div className="h-6 w-12 bg-dark-700 rounded mx-auto mb-1" />
-                    <div className="h-3 w-16 bg-dark-800 rounded mx-auto" />
-                  </div>
-                  <div className="text-center">
-                    <div className="h-6 w-12 bg-dark-700 rounded mx-auto mb-1" />
-                    <div className="h-3 w-16 bg-dark-800 rounded mx-auto" />
-                  </div>
-                  <div className="text-center">
-                    <div className="h-6 w-12 bg-dark-700 rounded mx-auto mb-1" />
-                    <div className="h-3 w-16 bg-dark-800 rounded mx-auto" />
+                {/* Reviews preview */}
+                <div className="mt-6 pt-6 border-t border-dark-800">
+                  <div className="flex items-center gap-4">
+                    <div className="flex -space-x-2">
+                      <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-xs font-bold text-white border-2 border-dark-900">S</div>
+                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs font-bold text-white border-2 border-dark-900">M</div>
+                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white border-2 border-dark-900">D</div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="ml-1 text-sm text-dark-400">5.0</span>
+                      </div>
+                      <p className="text-xs text-dark-500">Based on 47 reviews</p>
+                    </div>
                   </div>
                 </div>
               </div>
