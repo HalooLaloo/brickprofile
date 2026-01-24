@@ -230,13 +230,27 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { site_id, ...updateData } = body;
+    const { site_id, ...rawUpdateData } = body;
 
     if (!site_id) {
       return NextResponse.json(
         { error: "site_id is required" },
         { status: 400 }
       );
+    }
+
+    // Convert empty strings to null for optional fields
+    const nullableFields = [
+      "headline", "about_text", "phone", "email", "address",
+      "facebook_url", "instagram_url", "google_reviews_url",
+      "logo_url", "custom_domain", "quotesnap_user_id"
+    ];
+
+    const updateData = { ...rawUpdateData };
+    for (const field of nullableFields) {
+      if (field in updateData && updateData[field] === "") {
+        updateData[field] = null;
+      }
     }
 
     // If slug is being updated, check if it's unique
@@ -306,8 +320,9 @@ export async function PATCH(request: Request) {
 
     if (error) {
       console.error("Error updating site:", error);
+      console.error("Update data was:", JSON.stringify(updateData, null, 2));
       return NextResponse.json(
-        { error: "Failed to update site" },
+        { error: `Failed to update site: ${error.message}` },
         { status: 500 }
       );
     }
@@ -316,7 +331,7 @@ export async function PATCH(request: Request) {
   } catch (error) {
     console.error("Error updating site:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: `Internal server error: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     );
   }
