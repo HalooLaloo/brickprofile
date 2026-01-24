@@ -825,9 +825,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-dark-400 hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-dark-400 hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="text-dark-400 hover:text-white transition-colors">Contact</a></li>
+                <li><Link href="/privacy" className="text-dark-400 hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-dark-400 hover:text-white transition-colors">Terms of Service</Link></li>
+                <li><a href="mailto:contact@brickprofile.com" className="text-dark-400 hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
           </div>

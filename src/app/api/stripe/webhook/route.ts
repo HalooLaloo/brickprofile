@@ -59,7 +59,7 @@ export async function POST(request: Request) {
         if (resend && updatedProfile?.email) {
           try {
             await resend.emails.send({
-              from: "BrickProfile <hello@brickprofile.com>",
+              from: "BrickProfile <contact@brickprofile.com>",
               to: updatedProfile.email,
               subject: "🎉 Welcome to BrickProfile Pro!",
               html: `

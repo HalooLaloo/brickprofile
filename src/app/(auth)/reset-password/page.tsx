@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle } from "lucide-react";
 
-export default function RegisterPage() {
-  const [email, setEmail] = useState("");
+export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,12 +31,8 @@ export default function RegisterPage() {
 
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+    const { error } = await supabase.auth.updateUser({
+      password: password,
     });
 
     if (error) {
@@ -47,29 +41,34 @@ export default function RegisterPage() {
       return;
     }
 
-    // Create profile record
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    setSuccess(true);
+    setLoading(false);
 
-    if (user) {
-      await supabase.from("ps_profiles").insert({
-        id: user.id,
-        email: user.email,
-      });
-    }
-
-    router.push("/onboarding");
-    router.refresh();
+    // Redirect to editor after 2 seconds
+    setTimeout(() => {
+      router.push("/editor");
+    }, 2000);
   };
+
+  if (success) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="card p-6 text-center">
+          <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+          <h1 className="text-xl font-bold mb-2">Password updated!</h1>
+          <p className="text-dark-400">
+            Redirecting you to your dashboard...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold mb-2">Create your account</h1>
-        <p className="text-dark-400">
-          Start building your portfolio website today
-        </p>
+        <h1 className="text-2xl font-bold mb-2">Set new password</h1>
+        <p className="text-dark-400">Enter your new password below</p>
       </div>
 
       <div className="card p-6">
@@ -81,23 +80,8 @@ export default function RegisterPage() {
           )}
 
           <div>
-            <label htmlFor="email" className="label">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input"
-              placeholder="you@example.com"
-              required
-            />
-          </div>
-
-          <div>
             <label htmlFor="password" className="label">
-              Password
+              New password
             </label>
             <input
               type="password"
@@ -113,7 +97,7 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="confirmPassword" className="label">
-              Confirm Password
+              Confirm password
             </label>
             <input
               type="password"
@@ -123,6 +107,7 @@ export default function RegisterPage() {
               className="input"
               placeholder="••••••••"
               required
+              minLength={6}
             />
           </div>
 
@@ -134,24 +119,11 @@ export default function RegisterPage() {
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "Create Account"
+              "Update password"
             )}
           </button>
         </form>
-
-        <div className="mt-6 pt-6 border-t border-dark-800 text-center">
-          <p className="text-dark-400 text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="link">
-              Sign in
-            </Link>
-          </p>
-        </div>
       </div>
-
-      <p className="mt-6 text-center text-xs text-dark-500">
-        By signing up, you agree to our <Link href="/terms" className="text-brand-400 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-brand-400 hover:underline">Privacy Policy</Link>
-      </p>
     </div>
   );
 }

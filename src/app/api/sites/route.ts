@@ -157,7 +157,7 @@ export async function POST(request: Request) {
       try {
         const siteUrl = `https://${site.slug}.brickprofile.com`;
         await resend.emails.send({
-          from: "BrickProfile <hello@brickprofile.com>",
+          from: "BrickProfile <contact@brickprofile.com>",
           to: user.email,
           subject: `🎉 Your portfolio is live! - ${companyName}`,
           html: `
