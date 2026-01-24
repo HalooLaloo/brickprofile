@@ -76,13 +76,13 @@ export async function POST(request: Request) {
     let slug = generateSlug(companyName);
 
     // Check if slug exists
-    const { data: existingSlug } = await supabase
+    const { data: existingSlugs } = await supabase
       .from("ps_sites")
       .select("slug")
-      .eq("slug", slug)
-      .single();
+      .eq("slug", slug);
 
-    if (existingSlug) {
+    // Only add random suffix if slug already exists
+    if (existingSlugs && existingSlugs.length > 0) {
       slug = `${slug}-${Math.random().toString(36).substring(2, 6)}`;
     }
 
