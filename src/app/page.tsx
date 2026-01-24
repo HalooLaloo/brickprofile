@@ -827,7 +827,7 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="/privacy" className="text-dark-400 hover:text-white transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="text-dark-400 hover:text-white transition-colors">Terms of Service</Link></li>
-                <li><a href="mailto:contact@brickprofile.com" className="text-dark-400 hover:text-white transition-colors">Contact</a></li>
+                <li><Link href="/contact" className="text-dark-400 hover:text-white transition-colors">Contact</Link></li>
               </ul>
             </div>
           </div>
