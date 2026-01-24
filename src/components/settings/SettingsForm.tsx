@@ -15,7 +15,9 @@ import {
   AlertCircle,
   CheckCircle2,
   RefreshCw,
+  Lock,
 } from "lucide-react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 
@@ -389,11 +391,70 @@ export function SettingsForm({ user, profile, site }: SettingsFormProps) {
                 )}
               </>
             ) : (
-              <div className="p-4 rounded-lg bg-brand-500/10 border border-brand-500/20">
-                <p className="text-sm">
-                  <Crown className="w-4 h-4 inline mr-1 text-brand-400" />
-                  Upgrade to Pro to use a custom domain.
-                </p>
+              <div className="relative">
+                {/* Blurred preview of custom domain UI */}
+                <div className="blur-sm pointer-events-none select-none">
+                  <div>
+                    <label className="label">Custom Domain</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value="www.yourcompany.com"
+                        disabled
+                        placeholder="www.yourcompany.com"
+                        className="input flex-1"
+                      />
+                      <button
+                        disabled
+                        className="btn-primary btn-md"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* DNS Instructions Preview */}
+                  <div className="p-4 mt-4 rounded-lg bg-dark-800/50 border border-dark-700">
+                    <h3 className="font-medium mb-3 text-sm">DNS Configuration</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-2 rounded bg-dark-900">
+                        <div className="text-xs">
+                          <span className="text-dark-400">Type:</span>{" "}
+                          <span className="font-mono text-brand-400">CNAME</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-2 rounded bg-dark-900">
+                        <div className="text-xs">
+                          <span className="text-dark-400">Name:</span>{" "}
+                          <span className="font-mono">www</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-2 rounded bg-dark-900">
+                        <div className="text-xs">
+                          <span className="text-dark-400">Value:</span>{" "}
+                          <span className="font-mono">cname.vercel-dns.com</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lock overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-dark-900/70 backdrop-blur-[1px] rounded-lg">
+                  <div className="text-center p-6">
+                    <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-3">
+                      <Lock className="w-6 h-6 text-amber-400" />
+                    </div>
+                    <p className="font-semibold mb-1">Custom Domain</p>
+                    <p className="text-sm text-dark-400 mb-4">
+                      Use your own domain like<br />www.yourcompany.com
+                    </p>
+                    <Link href="/upgrade" className="btn-primary btn-sm bg-amber-500 hover:bg-amber-600">
+                      <Crown className="w-4 h-4 mr-1" />
+                      Upgrade to Pro
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
           </div>

@@ -19,6 +19,8 @@ import {
   Image as ImageIcon,
   Globe,
   MapPin,
+  Lock,
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -82,6 +84,7 @@ export default function BusinessCardsPage() {
   const [siteData, setSiteData] = useState<SiteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [isPro, setIsPro] = useState(false);
   const [template, setTemplate] = useState<Template>("executive");
   const [cardSide, setCardSide] = useState<CardSide>("double");
   const [accentColor, setAccentColor] = useState("#3b82f6");
@@ -108,7 +111,15 @@ export default function BusinessCardsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [sitesRes] = await Promise.all([fetch("/api/sites")]);
+        const [sitesRes, profileRes] = await Promise.all([
+          fetch("/api/sites"),
+          fetch("/api/profile"),
+        ]);
+
+        if (profileRes.ok) {
+          const { profile } = await profileRes.json();
+          setIsPro(profile?.plan === "pro");
+        }
 
         if (sitesRes.ok) {
           const { sites } = await sitesRes.json();
@@ -679,13 +690,34 @@ export default function BusinessCardsPage() {
             </p>
           </div>
 
-          <button onClick={downloadPDF} disabled={generating} className="btn-primary btn-lg w-full">
-            {generating ? (
-              <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Generating PDF...</>
-            ) : (
-              <><Download className="w-5 h-5 mr-2" /> Download Print-Ready PDF {cardSide === "double" && "(2 pages)"}</>
-            )}
-          </button>
+          {isPro ? (
+            <button onClick={downloadPDF} disabled={generating} className="btn-primary btn-lg w-full">
+              {generating ? (
+                <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Generating PDF...</>
+              ) : (
+                <><Download className="w-5 h-5 mr-2" /> Download Print-Ready PDF {cardSide === "double" && "(2 pages)"}</>
+              )}
+            </button>
+          ) : (
+            <div className="space-y-3">
+              <button disabled className="btn-primary btn-lg w-full opacity-50 cursor-not-allowed">
+                <Lock className="w-5 h-5 mr-2" />
+                Download Print-Ready PDF {cardSide === "double" && "(2 pages)"}
+              </button>
+              <div className="card p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Crown className="w-5 h-5 text-amber-400" />
+                  <span className="font-semibold text-amber-400">Pro Feature</span>
+                </div>
+                <p className="text-sm text-dark-400 mb-3">
+                  Design your perfect card above, then upgrade to Pro to download print-ready PDFs
+                </p>
+                <Link href="/upgrade" className="btn-primary btn-sm bg-amber-500 hover:bg-amber-600 inline-flex">
+                  Upgrade to Pro - $19.99/mo
+                </Link>
+              </div>
+            </div>
+          )}
 
           <div className="card p-4 bg-dark-800/50">
             <h3 className="font-medium mb-2">How to print:</h3>

@@ -248,56 +248,6 @@ export default function SocialPage() {
     }
   };
 
-  // Show upgrade prompt for free users - disabled for testing
-  // if (isPro === false) {
-  //   return (
-  //     <div className="max-w-2xl mx-auto">
-  //       <div className="card p-8 text-center">
-  //         <div className="w-16 h-16 rounded-full bg-brand-500/20 flex items-center justify-center mx-auto mb-6">
-  //           <Share2 className="w-8 h-8 text-brand-400" />
-  //         </div>
-  //         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
-  //           <Crown className="w-4 h-4 text-amber-400" />
-  //           <span className="text-sm text-amber-400 font-medium">Pro Feature</span>
-  //         </div>
-  //         <h1 className="text-2xl font-bold mb-4">Social Media Content Generator</h1>
-  //         <p className="text-dark-400 mb-6 max-w-md mx-auto">
-  //           Generate engaging Facebook & Instagram posts in seconds.
-  //           Choose from 9 post types optimized for contractor businesses.
-  //         </p>
-
-  //         <div className="grid sm:grid-cols-3 gap-4 mb-8 text-left">
-  //           {[
-  //             "Before & After posts",
-  //             "Project Showcases",
-  //             "Quick Tips & Polls",
-  //             "Customer Testimonials",
-  //             "Special Offers",
-  //             "Behind the Scenes",
-  //           ].map((feature) => (
-  //             <div key={feature} className="flex items-center gap-2 text-sm">
-  //               <Check className="w-4 h-4 text-brand-400 flex-shrink-0" />
-  //               <span className="text-dark-300">{feature}</span>
-  //             </div>
-  //           ))}
-  //         </div>
-
-  //         <div className="bg-dark-800/50 rounded-lg p-4 mb-6">
-  //           <p className="text-sm text-dark-400 mb-2">Example generated post:</p>
-  //           <p className="text-dark-300 text-sm italic">
-  //             "✨ Transform your space! Check out this incredible bathroom renovation we just completed. From outdated to absolutely stunning! 🛁 Swipe to see the before..."
-  //           </p>
-  //         </div>
-
-  //         <Link href="/upgrade" className="btn-primary btn-lg">
-  //           <Crown className="w-5 h-5 mr-2" />
-  //           Upgrade to Pro - $19.99/mo
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   // Loading state
   if (isPro === null) {
     return (
@@ -459,24 +409,50 @@ export default function SocialPage() {
       )}
 
       {/* Generate Button */}
-      <div className="flex justify-center">
-        <button
-          onClick={generatePost}
-          disabled={loading}
-          className="btn-primary btn-lg px-8"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-5 h-5 mr-2" />
-              Generate Post
-            </>
-          )}
-        </button>
+      <div className="flex flex-col items-center gap-4">
+        {!isPro ? (
+          <>
+            <div className="relative">
+              <button
+                disabled
+                className="btn-primary btn-lg px-8 opacity-50 cursor-not-allowed"
+              >
+                <Lock className="w-5 h-5 mr-2" />
+                Generate Post
+              </button>
+            </div>
+            <div className="card p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 max-w-md text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Crown className="w-5 h-5 text-amber-400" />
+                <span className="font-semibold text-amber-400">Pro Feature</span>
+              </div>
+              <p className="text-sm text-dark-400 mb-3">
+                Upgrade to Pro to generate unlimited social media posts with AI
+              </p>
+              <Link href="/upgrade" className="btn-primary btn-sm bg-amber-500 hover:bg-amber-600">
+                Upgrade to Pro - $19.99/mo
+              </Link>
+            </div>
+          </>
+        ) : (
+          <button
+            onClick={generatePost}
+            disabled={loading}
+            className="btn-primary btn-lg px-8"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5 mr-2" />
+                Generate Post
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Generated Post */}

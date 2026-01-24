@@ -4,6 +4,26 @@ import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 import { Crown, Lock } from "lucide-react";
 import Link from "next/link";
 
+// Generate sample analytics data for preview
+function generateSampleAnalytics() {
+  const data = [];
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    data.push({
+      id: `sample-${i}`,
+      site_id: "sample",
+      date: date.toISOString().split("T")[0],
+      page_views: Math.floor(50 + Math.random() * 100 + (29 - i) * 2),
+      unique_visitors: Math.floor(25 + Math.random() * 50 + (29 - i)),
+      quote_clicks: Math.floor(Math.random() * 5),
+      phone_clicks: Math.floor(Math.random() * 8),
+    });
+  }
+  return data;
+}
+
 export default async function AnalyticsPage() {
   const supabase = await createClient();
   const {
@@ -66,34 +86,51 @@ export default async function AnalyticsPage() {
       </div>
 
       {!isPro ? (
-        <div className="card p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-brand-500/10 flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-8 h-8 text-brand-400" />
-          </div>
-          <h2 className="text-2xl font-bold mb-4">
-            Unlock Full Analytics
-          </h2>
-          <p className="text-dark-400 max-w-md mx-auto mb-8">
-            Get detailed insights into your portfolio&apos;s performance including
-            visitor trends, engagement metrics, and conversion tracking.
-          </p>
-
-          {/* Basic stats preview */}
-          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8">
-            <div className="p-4 rounded-lg bg-dark-800/50">
-              <p className="text-3xl font-bold">{totals.pageViews}</p>
-              <p className="text-sm text-dark-400">Total Views</p>
-            </div>
-            <div className="p-4 rounded-lg bg-dark-800/50 opacity-50">
-              <p className="text-3xl font-bold">?</p>
-              <p className="text-sm text-dark-400">More Stats</p>
-            </div>
+        <div className="relative">
+          {/* Blurred preview of full dashboard with sample data */}
+          <div className="blur-sm pointer-events-none select-none">
+            <AnalyticsDashboard
+              analytics={generateSampleAnalytics()}
+              totals={{ pageViews: 2847, uniqueVisitors: 1423, quoteClicks: 89, phoneClicks: 156 }}
+            />
           </div>
 
-          <Link href="/upgrade" className="btn-primary btn-lg">
-            <Crown className="w-5 h-5 mr-2" />
-            Upgrade to Pro
-          </Link>
+          {/* Overlay with upgrade CTA */}
+          <div className="absolute inset-0 flex items-center justify-center bg-dark-900/60 backdrop-blur-[2px]">
+            <div className="card p-8 max-w-md text-center bg-gradient-to-br from-dark-800 to-dark-900 border-amber-500/30">
+              <div className="w-14 h-14 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-4">
+                <Crown className="w-7 h-7 text-amber-400" />
+              </div>
+              <h2 className="text-xl font-bold mb-2">
+                Unlock Full Analytics
+              </h2>
+              <p className="text-dark-400 text-sm mb-6">
+                See detailed visitor trends, engagement metrics, quote requests, and phone clicks to understand how your portfolio performs.
+              </p>
+
+              {/* Mini preview of real stats */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="p-3 rounded-lg bg-dark-700/50">
+                  <p className="text-2xl font-bold">{totals.pageViews}</p>
+                  <p className="text-xs text-dark-400">Your Views</p>
+                </div>
+                <div className="p-3 rounded-lg bg-dark-700/50 relative overflow-hidden">
+                  <div className="blur-sm">
+                    <p className="text-2xl font-bold">{totals.uniqueVisitors}</p>
+                    <p className="text-xs text-dark-400">Visitors</p>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Lock className="w-4 h-4 text-dark-500" />
+                  </div>
+                </div>
+              </div>
+
+              <Link href="/upgrade" className="btn-primary btn-md w-full bg-amber-500 hover:bg-amber-600">
+                <Crown className="w-4 h-4 mr-2" />
+                Upgrade to Pro - $19.99/mo
+              </Link>
+            </div>
+          </div>
         </div>
       ) : (
         <AnalyticsDashboard analytics={analytics || []} totals={totals} />
