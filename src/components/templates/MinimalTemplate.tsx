@@ -9,9 +9,15 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
+  Sparkles,
+  Clock,
+  MessageSquare,
+  FileText,
 } from "lucide-react";
 import type { TemplateProps, Photo } from "@/lib/types";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
+import { ContactForm } from "./ContactForm";
+import { WatermarkedPhoto } from "@/components/ui/WatermarkedPhoto";
 
 export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
@@ -75,11 +81,12 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
           )}
           {site.show_quote_button && site.quotesnap_user_id && (
             <a
-              href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL}/request/${site.quotesnap_user_id}`}
+              href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
+              target="_blank"
               className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border border-dark-600 hover:border-white rounded"
             >
-              Get a Quote
-              <ArrowRight className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" />
+              Get AI Quote
             </a>
           )}
         </div>
@@ -171,10 +178,11 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
                     onClick={() => setSelectedPhoto(index)}
                     className="aspect-square overflow-hidden hover:opacity-80 transition-opacity"
                   >
-                    <img
+                    <WatermarkedPhoto
                       src={photo.url}
                       alt={photo.caption || ""}
-                      className="w-full h-full object-cover"
+                      companyName={site.company_name}
+                      className="w-full h-full"
                     />
                   </button>
                 ))}
@@ -220,32 +228,71 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
         </section>
       )}
 
-      {/* Contact - Minimal */}
+      {/* Contact */}
       <section className="py-24 px-6 border-t border-dark-800/50">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-sm font-medium text-dark-500 uppercase tracking-wide mb-8">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-sm font-medium text-dark-500 uppercase tracking-wide mb-12">
             Contact
           </h2>
-          <div className="space-y-4">
-            {site.phone && (
-              <a
-                href={`tel:${site.phone}`}
-                className="block text-2xl hover:text-dark-300 transition-colors"
-              >
-                {site.phone}
-              </a>
-            )}
-            {site.email && (
-              <a
-                href={`mailto:${site.email}`}
-                className="block text-2xl hover:text-dark-300 transition-colors"
-              >
-                {site.email}
-              </a>
-            )}
-            {site.address && (
-              <p className="text-dark-500">{site.address}</p>
-            )}
+
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Left - BrickQuote + Contact Info */}
+            <div className="space-y-8">
+              {/* BrickQuote */}
+              {site.show_quote_button && site.quotesnap_user_id && (
+                <div className="p-6 border border-dark-700 rounded-lg">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Sparkles className="w-5 h-5" style={{ color: primaryColor }} />
+                    <span className="font-medium">Get AI Quote</span>
+                  </div>
+                  <p className="text-sm text-dark-400 mb-4">
+                    Instant estimate powered by AI. Describe your project and get a quote in minutes.
+                  </p>
+                  <a
+                    href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
+                    target="_blank"
+                    className="inline-flex items-center gap-2 text-sm hover:text-dark-300 transition-colors"
+                    style={{ color: primaryColor }}
+                  >
+                    Start AI Quote
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+              )}
+
+              {/* Contact Info */}
+              <div className="space-y-4">
+                {site.phone && (
+                  <a
+                    href={`tel:${site.phone}`}
+                    className="block text-xl hover:text-dark-300 transition-colors"
+                  >
+                    {site.phone}
+                  </a>
+                )}
+                {site.email && (
+                  <a
+                    href={`mailto:${site.email}`}
+                    className="block text-xl hover:text-dark-300 transition-colors"
+                  >
+                    {site.email}
+                  </a>
+                )}
+                {site.address && (
+                  <p className="text-dark-500">{site.address}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Right - Contact Form */}
+            <div className="bg-white rounded-lg p-6 text-dark-900">
+              <h3 className="font-medium mb-4">Send a message</h3>
+              <ContactForm
+                siteId={site.id}
+                primaryColor={primaryColor}
+                services={site.services as { name: string; description?: string }[] || []}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -279,10 +326,11 @@ export function MinimalTemplate({ site, photos, reviews }: TemplateProps) {
           </button>
 
           <div className="max-w-6xl px-16" onClick={(e) => e.stopPropagation()}>
-            <img
+            <WatermarkedPhoto
               src={regularPhotos[selectedPhoto].url}
               alt={regularPhotos[selectedPhoto].caption || ""}
-              className="max-w-full max-h-[90vh] object-contain"
+              companyName={site.company_name}
+              className="max-w-full max-h-[90vh]"
             />
             {regularPhotos[selectedPhoto].caption && (
               <p className="text-center mt-6 text-dark-500">

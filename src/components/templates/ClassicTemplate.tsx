@@ -11,10 +11,14 @@ import {
   ChevronRight,
   Check,
   MessageSquare,
+  Sparkles,
+  Clock,
+  FileText,
 } from "lucide-react";
 import type { TemplateProps, Photo } from "@/lib/types";
 import { ContactForm } from "./ContactForm";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
+import { WatermarkedPhoto } from "@/components/ui/WatermarkedPhoto";
 
 export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
@@ -77,13 +81,13 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
               )}
               {site.show_quote_button && site.quotesnap_user_id && (
                 <a
-                  href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL}/request/${site.quotesnap_user_id}`}
+                  href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
                   target="_blank"
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-white transition-colors"
                   style={{ backgroundColor: primaryColor }}
                 >
-                  <MessageSquare className="w-4 h-4" />
-                  Get Quote
+                  <Sparkles className="w-4 h-4" />
+                  Get AI Quote
                 </a>
               )}
             </div>
@@ -210,10 +214,11 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
                     onClick={() => setSelectedPhoto(index)}
                     className="aspect-square rounded-xl overflow-hidden bg-dark-800 hover:opacity-90 transition-opacity"
                   >
-                    <img
+                    <WatermarkedPhoto
                       src={photo.url}
                       alt={photo.caption || "Portfolio photo"}
-                      className="w-full h-full object-cover"
+                      companyName={site.company_name}
+                      className="w-full h-full"
                     />
                   </button>
                 ))}
@@ -293,17 +298,72 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
 
       {/* Contact */}
       <section className="py-16 px-4 border-t border-dark-800">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <h3 className="text-2xl font-bold mb-8 text-center">Get In Touch</h3>
 
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Contact Info */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left side - BrickQuote + Contact Info */}
             <div className="space-y-6">
-              <p className="text-dark-300">
-                Ready to start your project? Get in touch with us today for a free consultation.
-              </p>
+              {/* BrickQuote Card */}
+              {site.show_quote_button && site.quotesnap_user_id && (
+                <div
+                  className="rounded-xl p-6 border-2"
+                  style={{
+                    background: `linear-gradient(135deg, ${primaryColor}15, ${primaryColor}05)`,
+                    borderColor: `${primaryColor}40`,
+                  }}
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div
+                      className="p-3 rounded-xl"
+                      style={{ backgroundColor: `${primaryColor}20` }}
+                    >
+                      <Sparkles className="w-6 h-6" style={{ color: primaryColor }} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg mb-1">Get an AI Quote</h4>
+                      <p className="text-sm text-dark-400">
+                        Instant estimate powered by AI
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 mb-5 text-sm text-dark-300">
+                    <li className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" style={{ color: primaryColor }} />
+                      Get a quote in under 2 minutes
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" style={{ color: primaryColor }} />
+                      Chat with AI to describe your project
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <FileText className="w-4 h-4" style={{ color: primaryColor }} />
+                      Receive detailed PDF estimate
+                    </li>
+                  </ul>
+                  <a
+                    href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
+                    target="_blank"
+                    className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-lg text-white font-medium transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: primaryColor }}
+                  >
+                    <Sparkles className="w-5 h-5" />
+                    Get AI Quote Now
+                  </a>
+                  <p className="text-xs text-center text-dark-500 mt-3">
+                    Powered by <a href="https://brickquote.app" target="_blank" className="underline hover:text-dark-400">BrickQuote.app</a>
+                  </p>
+                </div>
+              )}
 
+              {/* Contact Info */}
               <div className="space-y-4">
+                <p className="text-dark-300">
+                  {site.show_quote_button && site.quotesnap_user_id
+                    ? "Or contact us directly:"
+                    : "Ready to start your project? Get in touch today."}
+                </p>
+
                 {site.phone && (
                   <a
                     href={`tel:${site.phone}`}
@@ -328,34 +388,34 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
                     {site.address}
                   </div>
                 )}
-              </div>
 
-              {/* Social links */}
-              {(site.facebook_url || site.instagram_url) && (
-                <div className="flex gap-4">
-                  {site.facebook_url && (
-                    <a
-                      href={site.facebook_url}
-                      target="_blank"
-                      className="p-3 rounded-lg bg-dark-800 hover:bg-dark-700 transition-colors"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                    </a>
-                  )}
-                  {site.instagram_url && (
-                    <a
-                      href={site.instagram_url}
-                      target="_blank"
-                      className="p-3 rounded-lg bg-dark-800 hover:bg-dark-700 transition-colors"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
-              )}
+                {/* Social links */}
+                {(site.facebook_url || site.instagram_url) && (
+                  <div className="flex gap-4 pt-2">
+                    {site.facebook_url && (
+                      <a
+                        href={site.facebook_url}
+                        target="_blank"
+                        className="p-3 rounded-lg bg-dark-800 hover:bg-dark-700 transition-colors"
+                      >
+                        <ExternalLink className="w-5 h-5" />
+                      </a>
+                    )}
+                    {site.instagram_url && (
+                      <a
+                        href={site.instagram_url}
+                        target="_blank"
+                        className="p-3 rounded-lg bg-dark-800 hover:bg-dark-700 transition-colors"
+                      >
+                        <ExternalLink className="w-5 h-5" />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Contact Form */}
+            {/* Right side - Contact Form */}
             <div className="bg-white rounded-xl p-6 text-dark-900">
               <h4 className="font-semibold text-lg mb-4">Send us a message</h4>
               <ContactForm
@@ -398,10 +458,11 @@ export function ClassicTemplate({ site, photos, reviews }: TemplateProps) {
           </button>
 
           <div className="max-w-4xl max-h-[80vh]" onClick={(e) => e.stopPropagation()}>
-            <img
+            <WatermarkedPhoto
               src={regularPhotos[selectedPhoto].url}
               alt={regularPhotos[selectedPhoto].caption || "Portfolio photo"}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              companyName={site.company_name}
+              className="max-w-full max-h-[80vh] rounded-lg"
             />
             {regularPhotos[selectedPhoto].caption && (
               <p className="text-center mt-4 text-dark-300">

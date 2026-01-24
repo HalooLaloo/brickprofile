@@ -10,9 +10,14 @@ import {
   ChevronRight,
   ArrowUpRight,
   MessageSquare,
+  Sparkles,
+  Clock,
+  FileText,
 } from "lucide-react";
 import type { TemplateProps, Photo } from "@/lib/types";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
+import { ContactForm } from "./ContactForm";
+import { WatermarkedPhoto } from "@/components/ui/WatermarkedPhoto";
 
 export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
@@ -69,12 +74,12 @@ export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
             )}
             {site.show_quote_button && site.quotesnap_user_id && (
               <a
-                href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL}/request/${site.quotesnap_user_id}`}
+                href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
                 target="_blank"
                 className="flex items-center gap-2 px-4 py-2 rounded bg-white text-dark-900 text-sm font-bold hover:bg-dark-100 transition-colors"
               >
-                FREE QUOTE
-                <ArrowUpRight className="w-4 h-4" />
+                <Sparkles className="w-4 h-4" />
+                AI QUOTE
               </a>
             )}
           </div>
@@ -258,10 +263,11 @@ export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
                     onClick={() => setSelectedPhoto(index)}
                     className="aspect-square rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform"
                   >
-                    <img
+                    <WatermarkedPhoto
                       src={photo.url}
                       alt={photo.caption || ""}
-                      className="w-full h-full object-cover"
+                      companyName={site.company_name}
+                      className="w-full h-full"
                     />
                   </button>
                 ))}
@@ -323,16 +329,26 @@ export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
         className="py-24 px-6"
         style={{ backgroundColor: primaryColor }}
       >
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="text-5xl font-black mb-6">READY TO START?</h2>
           <p className="text-xl opacity-90 mb-8">
             Contact us today for a free consultation and quote.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
+            {site.show_quote_button && site.quotesnap_user_id && (
+              <a
+                href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
+                target="_blank"
+                className="flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-dark-900 font-bold hover:bg-dark-100 transition-colors"
+              >
+                <Sparkles className="w-5 h-5" />
+                GET AI QUOTE
+              </a>
+            )}
             {site.phone && (
               <a
                 href={`tel:${site.phone}`}
-                className="flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-dark-900 font-bold hover:bg-dark-100 transition-colors"
+                className="flex items-center gap-2 px-8 py-4 rounded-xl border-2 border-white font-bold hover:bg-white/10 transition-colors"
               >
                 <Phone className="w-5 h-5" />
                 {site.phone}
@@ -347,6 +363,73 @@ export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
                 {site.email}
               </a>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form Section */}
+      <section className="py-20 px-6 bg-dark-900">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* BrickQuote Card */}
+            {site.show_quote_button && site.quotesnap_user_id && (
+              <div
+                className="rounded-2xl p-8 border-2"
+                style={{
+                  background: `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}05)`,
+                  borderColor: primaryColor,
+                }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className="p-3 rounded-xl"
+                    style={{ backgroundColor: `${primaryColor}30` }}
+                  >
+                    <Sparkles className="w-8 h-8" style={{ color: primaryColor }} />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-black">AI QUOTE</h4>
+                    <p className="text-dark-400">Instant estimate</p>
+                  </div>
+                </div>
+                <ul className="space-y-3 mb-8 text-dark-300">
+                  <li className="flex items-center gap-3">
+                    <Clock className="w-5 h-5" style={{ color: primaryColor }} />
+                    Get quote in under 2 minutes
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <MessageSquare className="w-5 h-5" style={{ color: primaryColor }} />
+                    Chat with AI about your project
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <FileText className="w-5 h-5" style={{ color: primaryColor }} />
+                    Receive detailed PDF estimate
+                  </li>
+                </ul>
+                <a
+                  href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
+                  target="_blank"
+                  className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg transition-all hover:scale-105"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  <Sparkles className="w-6 h-6" />
+                  GET AI QUOTE NOW
+                </a>
+                <p className="text-xs text-center text-dark-500 mt-4">
+                  Powered by <a href="https://brickquote.app" target="_blank" className="underline">BrickQuote.app</a>
+                </p>
+              </div>
+            )}
+
+            {/* Contact Form */}
+            <div className={`bg-white rounded-2xl p-8 text-dark-900 ${!site.show_quote_button || !site.quotesnap_user_id ? 'md:col-span-2 max-w-xl mx-auto' : ''}`}>
+              <h4 className="text-2xl font-black mb-6">SEND A MESSAGE</h4>
+              <ContactForm
+                siteId={site.id}
+                primaryColor={primaryColor}
+                services={site.services as { name: string; description?: string }[] || []}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -380,10 +463,11 @@ export function BoldTemplate({ site, photos, reviews }: TemplateProps) {
           </button>
 
           <div className="max-w-5xl" onClick={(e) => e.stopPropagation()}>
-            <img
+            <WatermarkedPhoto
               src={regularPhotos[selectedPhoto].url}
               alt={regularPhotos[selectedPhoto].caption || ""}
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl"
+              companyName={site.company_name}
+              className="max-w-full max-h-[85vh] rounded-2xl"
             />
           </div>
 

@@ -10,9 +10,14 @@ import {
   ChevronRight,
   ArrowRight,
   MessageSquare,
+  Sparkles,
+  Clock,
+  FileText,
 } from "lucide-react";
 import type { TemplateProps, Photo } from "@/lib/types";
 import { BeforeAfterSlider } from "@/components/ui/BeforeAfterSlider";
+import { ContactForm } from "./ContactForm";
+import { WatermarkedPhoto } from "@/components/ui/WatermarkedPhoto";
 
 export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
@@ -66,13 +71,13 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
             )}
             {site.show_quote_button && site.quotesnap_user_id && (
               <a
-                href={`${process.env.NEXT_PUBLIC_QUOTESNAP_URL}/request/${site.quotesnap_user_id}`}
+                href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
                 target="_blank"
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-white transition-all hover:scale-105"
                 style={{ backgroundColor: primaryColor }}
               >
-                Get a Quote
-                <ArrowRight className="w-4 h-4" />
+                <Sparkles className="w-4 h-4" />
+                Get AI Quote
               </a>
             )}
           </div>
@@ -248,9 +253,10 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
                     onClick={() => setSelectedPhoto(index)}
                     className="w-full rounded-2xl overflow-hidden hover:opacity-90 transition-opacity break-inside-avoid"
                   >
-                    <img
+                    <WatermarkedPhoto
                       src={photo.url}
                       alt={photo.caption || "Portfolio photo"}
+                      companyName={site.company_name}
                       className="w-full"
                     />
                   </button>
@@ -321,38 +327,113 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
         </section>
       )}
 
-      {/* Contact - Minimal */}
+      {/* Contact */}
       <section className="py-32 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <p
-            className="text-sm font-medium tracking-widest uppercase mb-4"
-            style={{ color: primaryColor }}
-          >
-            Contact
-          </p>
-          <h2 className="text-4xl font-bold mb-4">Let&apos;s Work Together</h2>
-          <p className="text-xl text-dark-400 mb-12">
-            Ready to start your project? Get in touch today.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            {site.phone && (
-              <a
-                href={`tel:${site.phone}`}
-                className="flex items-center gap-3 px-8 py-4 rounded-full border border-dark-700 hover:border-dark-600 transition-colors"
-              >
-                <Phone className="w-5 h-5" style={{ color: primaryColor }} />
-                {site.phone}
-              </a>
-            )}
-            {site.email && (
-              <a
-                href={`mailto:${site.email}`}
-                className="flex items-center gap-3 px-8 py-4 rounded-full border border-dark-700 hover:border-dark-600 transition-colors"
-              >
-                <Mail className="w-5 h-5" style={{ color: primaryColor }} />
-                {site.email}
-              </a>
-            )}
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <p
+              className="text-sm font-medium tracking-widest uppercase mb-4"
+              style={{ color: primaryColor }}
+            >
+              Contact
+            </p>
+            <h2 className="text-4xl font-bold mb-4">Let&apos;s Work Together</h2>
+            <p className="text-xl text-dark-400">
+              Ready to start your project? Get in touch today.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left - BrickQuote + Contact Info */}
+            <div className="space-y-6">
+              {/* BrickQuote Card */}
+              {site.show_quote_button && site.quotesnap_user_id && (
+                <div
+                  className="rounded-3xl p-8 border"
+                  style={{
+                    background: `linear-gradient(135deg, ${primaryColor}15, ${primaryColor}05)`,
+                    borderColor: `${primaryColor}30`,
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div
+                      className="p-3 rounded-2xl"
+                      style={{ backgroundColor: `${primaryColor}20` }}
+                    >
+                      <Sparkles className="w-6 h-6" style={{ color: primaryColor }} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg">Get an AI Quote</h4>
+                      <p className="text-sm text-dark-400">Instant estimate</p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 mb-6 text-sm text-dark-300">
+                    <li className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" style={{ color: primaryColor }} />
+                      Quote in under 2 minutes
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" style={{ color: primaryColor }} />
+                      AI-powered chat
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <FileText className="w-4 h-4" style={{ color: primaryColor }} />
+                      PDF estimate included
+                    </li>
+                  </ul>
+                  <a
+                    href={`https://brickquote.app/request/${site.quotesnap_user_id}`}
+                    target="_blank"
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-white font-medium transition-all hover:scale-105"
+                    style={{ backgroundColor: primaryColor }}
+                  >
+                    <Sparkles className="w-5 h-5" />
+                    Get AI Quote
+                  </a>
+                  <p className="text-xs text-center text-dark-500 mt-3">
+                    Powered by <a href="https://brickquote.app" target="_blank" className="underline">BrickQuote.app</a>
+                  </p>
+                </div>
+              )}
+
+              {/* Contact buttons */}
+              <div className="space-y-3">
+                {site.phone && (
+                  <a
+                    href={`tel:${site.phone}`}
+                    className="flex items-center gap-3 px-6 py-4 rounded-2xl border border-dark-700 hover:border-dark-600 transition-colors"
+                  >
+                    <Phone className="w-5 h-5" style={{ color: primaryColor }} />
+                    {site.phone}
+                  </a>
+                )}
+                {site.email && (
+                  <a
+                    href={`mailto:${site.email}`}
+                    className="flex items-center gap-3 px-6 py-4 rounded-2xl border border-dark-700 hover:border-dark-600 transition-colors"
+                  >
+                    <Mail className="w-5 h-5" style={{ color: primaryColor }} />
+                    {site.email}
+                  </a>
+                )}
+                {site.address && (
+                  <div className="flex items-center gap-3 px-6 py-4 rounded-2xl border border-dark-700">
+                    <MapPin className="w-5 h-5" style={{ color: primaryColor }} />
+                    {site.address}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right - Contact Form */}
+            <div className="bg-white rounded-3xl p-8 text-dark-900">
+              <h4 className="font-semibold text-lg mb-6">Send a message</h4>
+              <ContactForm
+                siteId={site.id}
+                primaryColor={primaryColor}
+                services={site.services as { name: string; description?: string }[] || []}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -386,10 +467,11 @@ export function ModernTemplate({ site, photos, reviews }: TemplateProps) {
           </button>
 
           <div className="max-w-5xl" onClick={(e) => e.stopPropagation()}>
-            <img
+            <WatermarkedPhoto
               src={regularPhotos[selectedPhoto].url}
               alt={regularPhotos[selectedPhoto].caption || ""}
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl"
+              companyName={site.company_name}
+              className="max-w-full max-h-[85vh] rounded-2xl"
             />
           </div>
 
