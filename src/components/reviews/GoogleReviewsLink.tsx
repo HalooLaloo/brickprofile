@@ -102,21 +102,22 @@ export function GoogleReviewsLink({
             </button>
           </div>
           <p className="text-sm text-dark-400 mb-4">
-            Add your Google Business reviews link to display a "View our Google Reviews" button on your portfolio.
+            Paste a link to your business on Google Maps. A "View our Google Reviews" button will appear on your portfolio.
           </p>
 
           {showHelp && (
             <div className="mb-4 p-3 rounded-lg bg-dark-800 text-sm">
               <p className="font-medium mb-2">How to get your Google Reviews link:</p>
-              <ol className="list-decimal list-inside space-y-1 text-dark-400">
-                <li>Search for your business on Google Maps</li>
-                <li>Click on your business listing</li>
-                <li>Click on "Reviews" or the star rating</li>
-                <li>Copy the URL from your browser</li>
+              <ol className="list-decimal list-inside space-y-2 text-dark-400">
+                <li>Open <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="text-brand-400 underline">Google Maps</a></li>
+                <li>Search for your business name</li>
+                <li>Click on your business</li>
+                <li>Copy the link from your browser's address bar</li>
               </ol>
-              <p className="mt-2 text-dark-500">
-                The URL should look like: google.com/maps/place/Your+Business/...
-              </p>
+              <div className="mt-3 p-2 rounded bg-dark-900 text-xs text-dark-500">
+                <p className="mb-1">Example link:</p>
+                <code className="text-dark-400 break-all">https://google.com/maps/place/Your+Business+Name/...</code>
+              </div>
             </div>
           )}
 
@@ -131,7 +132,7 @@ export function GoogleReviewsLink({
                     setUrl(e.target.value);
                     setSaved(false);
                   }}
-                  placeholder="https://www.google.com/maps/place/..."
+                  placeholder="Paste your Google Maps link here"
                   className="input pl-10"
                 />
               </div>
