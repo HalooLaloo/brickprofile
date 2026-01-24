@@ -293,24 +293,85 @@ export function PhotosManager({
         </div>
       )}
 
-      {/* Pairing mode banner */}
-      {pairingMode && (
-        <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <ArrowLeftRight className="w-5 h-5 text-amber-400" />
-            <div>
-              <p className="font-medium text-amber-400">Select "After" Photo</p>
-              <p className="text-sm text-dark-400">
-                Click on another photo to pair it as the "After" image
+      {/* Before/After Feature - Prominent Section */}
+      {photos.length >= 2 && !pairingMode && (
+        <div className="card p-5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-amber-500/20">
+                <ArrowLeftRight className="w-6 h-6 text-amber-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-1">Create Before & After</h3>
+                <p className="text-sm text-dark-400">
+                  Show your transformations! Select a "before" photo, then pick the "after" photo to create an interactive comparison slider on your portfolio.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setPairingMode(true);
+                setSelectedForPairing(null);
+              }}
+              className="btn-primary btn-md whitespace-nowrap bg-amber-500 hover:bg-amber-600"
+            >
+              <ArrowLeftRight className="w-4 h-4 mr-2" />
+              Create Comparison
+            </button>
+          </div>
+
+          {/* Show existing pairs count */}
+          {photos.filter(p => p.is_before_after).length > 0 && (
+            <div className="mt-4 pt-4 border-t border-amber-500/20">
+              <p className="text-sm text-amber-400">
+                You have {photos.filter(p => p.is_before_after && p.is_before).length} before/after comparison{photos.filter(p => p.is_before_after && p.is_before).length !== 1 ? 's' : ''} on your portfolio
               </p>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* Pairing mode banner */}
+      {pairingMode && (
+        <div className="card p-5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-500/50">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-bold">
+                  {selectedForPairing ? "2" : "1"}
+                </div>
+                <div>
+                  <p className="font-semibold text-lg text-amber-400">
+                    {selectedForPairing ? 'Now click on the "AFTER" photo' : 'Click on the "BEFORE" photo'}
+                  </p>
+                  <p className="text-sm text-dark-400">
+                    {selectedForPairing
+                      ? "Select the photo showing the finished result"
+                      : "Select the photo showing the original state"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={cancelPairing}
+                className="btn-secondary btn-md"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </button>
+            </div>
+
+            {/* Progress indicator */}
+            <div className="flex items-center gap-2">
+              <div className={cn(
+                "flex-1 h-2 rounded-full transition-colors",
+                selectedForPairing ? "bg-amber-500" : "bg-amber-500/50"
+              )} />
+              <div className={cn(
+                "flex-1 h-2 rounded-full transition-colors",
+                selectedForPairing ? "bg-amber-500/50 animate-pulse" : "bg-dark-700"
+              )} />
+            </div>
           </div>
-          <button
-            onClick={cancelPairing}
-            className="btn-secondary btn-sm"
-          >
-            Cancel
-          </button>
         </div>
       )}
 
@@ -325,15 +386,24 @@ export function PhotosManager({
             return (
               <div
                 key={photo.id}
-                onClick={() => canSelectForPair && handleSelectPairPhoto(photo.id)}
+                onClick={() => {
+                  if (pairingMode && !selectedForPairing && !isPaired) {
+                    // First click - select as "before"
+                    setSelectedForPairing(photo.id);
+                  } else if (canSelectForPair) {
+                    // Second click - select as "after"
+                    handleSelectPairPhoto(photo.id);
+                  }
+                }}
                 className={cn(
-                  "group relative aspect-square rounded-xl overflow-hidden bg-dark-800 border transition-all",
+                  "group relative aspect-square rounded-xl overflow-hidden bg-dark-800 border-2 transition-all",
                   isSelectedForPairing
-                    ? "border-amber-500 ring-2 ring-amber-500/50"
+                    ? "border-amber-500 ring-4 ring-amber-500/30 scale-[1.02]"
                     : isPaired
                     ? "border-green-500/50"
-                    : "border-dark-700",
-                  canSelectForPair && "cursor-pointer hover:border-amber-500"
+                    : pairingMode && !isPaired
+                    ? "border-amber-500/50 cursor-pointer hover:border-amber-500 hover:scale-[1.02]"
+                    : "border-dark-700"
                 )}
               >
                 <img
@@ -342,8 +412,26 @@ export function PhotosManager({
                   className="w-full h-full object-cover"
                 />
 
+                {/* Pairing mode overlay for selectable photos */}
+                {pairingMode && !isPaired && !isSelectedForPairing && (
+                  <div className="absolute inset-0 bg-amber-500/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <div className="px-4 py-2 bg-amber-500 rounded-lg text-white font-semibold text-sm shadow-lg">
+                      {selectedForPairing ? "Click for AFTER" : "Click for BEFORE"}
+                    </div>
+                  </div>
+                )}
+
+                {/* Already paired - show disabled state in pairing mode */}
+                {pairingMode && isPaired && (
+                  <div className="absolute inset-0 bg-dark-950/60 flex items-center justify-center">
+                    <div className="px-3 py-1.5 bg-dark-800 rounded-lg text-dark-400 text-xs">
+                      Already paired
+                    </div>
+                  </div>
+                )}
+
                 {/* Before/After badge */}
-                {isPaired && (
+                {isPaired && !pairingMode && (
                   <div className="absolute top-2 left-2 px-2 py-1 rounded bg-green-500/90 text-xs font-medium text-white">
                     {photo.is_before ? "Before" : "After"}
                   </div>
@@ -351,8 +439,10 @@ export function PhotosManager({
 
                 {/* Selected for pairing indicator */}
                 {isSelectedForPairing && (
-                  <div className="absolute top-2 left-2 px-2 py-1 rounded bg-amber-500/90 text-xs font-medium text-white">
-                    Before
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="px-4 py-2 bg-amber-500 rounded-lg text-white font-bold shadow-lg">
+                      BEFORE
+                    </div>
                   </div>
                 )}
 

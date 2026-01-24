@@ -70,9 +70,6 @@ export default async function PhotosPage() {
         <p className="text-dark-400">
           Manage your portfolio photos. {!isPro && `Free plan: ${photos?.length || 0}/${maxPhotos} photos.`}
         </p>
-        <p className="text-sm text-dark-500 mt-2">
-          Tip: Click the link icon on any photo to create a Before/After transformation pair.
-        </p>
       </div>
 
       <PhotosManager
