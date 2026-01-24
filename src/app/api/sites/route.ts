@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { generateSlug } from "@/lib/utils";
 import { PLAN_LIMITS } from "@/lib/types";
 import { addDomainToVercel, removeDomainFromVercel } from "@/lib/vercel";
+import { Resend } from "resend";
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(request: Request) {
   try {
@@ -148,6 +151,64 @@ export async function POST(request: Request) {
         phone,
       })
       .eq("id", user.id);
+
+    // Send welcome email
+    if (resend && user.email) {
+      try {
+        const siteUrl = `https://${site.slug}.brickprofile.com`;
+        await resend.emails.send({
+          from: "BrickProfile <hello@brickprofile.com>",
+          to: user.email,
+          subject: `🎉 Your portfolio is live! - ${companyName}`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0a0a0b; color: #ffffff; padding: 40px 20px; margin: 0;">
+              <div style="max-width: 600px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 32px;">
+                  <h1 style="color: #3b82f6; margin: 0; font-size: 28px;">🧱 BrickProfile</h1>
+                </div>
+
+                <div style="background-color: #18181b; border-radius: 12px; padding: 32px; border: 1px solid #27272a;">
+                  <h2 style="margin: 0 0 16px 0; font-size: 24px;">Welcome, ${companyName}!</h2>
+                  <p style="color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0;">
+                    Your professional portfolio is now live and ready to impress potential clients.
+                  </p>
+
+                  <div style="background-color: #27272a; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                    <p style="margin: 0 0 8px 0; color: #a1a1aa; font-size: 14px;">Your portfolio URL:</p>
+                    <a href="${siteUrl}" style="color: #3b82f6; font-size: 18px; font-weight: 600; text-decoration: none;">${siteUrl}</a>
+                  </div>
+
+                  <p style="color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0;">
+                    <strong style="color: #ffffff;">What's next?</strong><br>
+                    • Share your link with potential clients<br>
+                    • Add more photos to showcase your work<br>
+                    • Collect reviews from happy customers
+                  </p>
+
+                  <a href="https://brickprofile.com/editor" style="display: inline-block; background-color: #3b82f6; color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    Edit Your Portfolio
+                  </a>
+                </div>
+
+                <p style="text-align: center; color: #52525b; font-size: 14px; margin-top: 32px;">
+                  Questions? Reply to this email - we're here to help!
+                </p>
+              </div>
+            </body>
+            </html>
+          `,
+        });
+      } catch (emailError) {
+        console.error("Error sending welcome email:", emailError);
+        // Don't fail the request if email fails
+      }
+    }
 
     return NextResponse.json({ site });
   } catch (error) {
