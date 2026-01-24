@@ -21,6 +21,8 @@ import {
   MapPin,
   Lock,
   Crown,
+  QrCode,
+  Smartphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -295,6 +297,30 @@ export default function BusinessCardsPage() {
         <p className="text-dark-400">Create professional business cards with your portfolio QR code.</p>
       </div>
 
+      {/* QR Code Feature Highlight */}
+      <div className="card p-5 bg-gradient-to-r from-brand-500/10 to-purple-500/10 border-brand-500/30">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="p-3 rounded-xl bg-brand-500/20">
+            <QrCode className="w-8 h-8 text-brand-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-lg mb-1 flex items-center gap-2">
+              QR Code to Your Portfolio
+              <span className="text-xs bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded-full">Auto-generated</span>
+            </h3>
+            <p className="text-sm text-dark-400">
+              Each business card includes a unique QR code that links directly to your BrickProfile portfolio.
+              When clients scan it with their phone, they instantly see all your work, contact info, and can request a quote.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 text-dark-400">
+            <Smartphone className="w-5 h-5" />
+            <span className="text-sm">→</span>
+            <span className="text-sm font-medium text-white">{siteData?.slug}.brickprofile.com</span>
+          </div>
+        </div>
+      </div>
+
       <div className="grid lg:grid-cols-5 gap-6">
         {/* Options Panel */}
         <div className="lg:col-span-2 space-y-4">
@@ -540,8 +566,22 @@ export default function BusinessCardsPage() {
               )}
             </div>
 
-            <div className="bg-dark-900 rounded-lg p-6 flex items-center justify-center min-h-[300px]">
-              <div className="relative" style={{ width: "360px", height: "210px" }}>
+            <div className={cn(
+              "bg-dark-900 rounded-lg p-6 flex items-center justify-center min-h-[300px] relative",
+              !isPro && "select-none"
+            )}>
+              {/* Watermark overlay for free users */}
+              {!isPro && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                  <div className="text-4xl font-bold text-white/10 rotate-[-20deg] select-none">
+                    PREVIEW
+                  </div>
+                </div>
+              )}
+              <div
+                className={cn("relative", !isPro && "blur-[2px] pointer-events-none")}
+                style={{ width: "360px", height: "210px" }}
+              >
                 {/* Front Card */}
                 <div
                   ref={frontCardRef}
@@ -704,17 +744,36 @@ export default function BusinessCardsPage() {
                 <Lock className="w-5 h-5 mr-2" />
                 Download Print-Ready PDF {cardSide === "double" && "(2 pages)"}
               </button>
-              <div className="card p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="card p-5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30">
+                <div className="flex items-center justify-center gap-2 mb-3">
                   <Crown className="w-5 h-5 text-amber-400" />
                   <span className="font-semibold text-amber-400">Pro Feature</span>
                 </div>
-                <p className="text-sm text-dark-400 mb-3">
-                  Design your perfect card above, then upgrade to Pro to download print-ready PDFs
-                </p>
-                <Link href="/upgrade" className="btn-primary btn-sm bg-amber-500 hover:bg-amber-600 inline-flex">
-                  Upgrade to Pro - $19.99/mo
-                </Link>
+                <div className="text-center mb-4">
+                  <p className="text-sm text-dark-300 mb-2">
+                    Get print-ready PDF with:
+                  </p>
+                  <ul className="text-sm text-dark-400 space-y-1">
+                    <li className="flex items-center justify-center gap-2">
+                      <Check className="w-4 h-4 text-green-400" />
+                      High-resolution 300 DPI quality
+                    </li>
+                    <li className="flex items-center justify-center gap-2">
+                      <Check className="w-4 h-4 text-green-400" />
+                      QR code linking to your portfolio
+                    </li>
+                    <li className="flex items-center justify-center gap-2">
+                      <Check className="w-4 h-4 text-green-400" />
+                      Ready for professional printing
+                    </li>
+                  </ul>
+                </div>
+                <div className="text-center">
+                  <Link href="/upgrade" className="btn-primary btn-md bg-amber-500 hover:bg-amber-600 inline-flex">
+                    <Crown className="w-4 h-4 mr-2" />
+                    Upgrade to Pro - $19.99/mo
+                  </Link>
+                </div>
               </div>
             </div>
           )}
