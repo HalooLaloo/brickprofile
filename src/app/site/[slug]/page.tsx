@@ -4,6 +4,7 @@ import { ClassicTemplate } from "@/components/templates/ClassicTemplate";
 import { ModernTemplate } from "@/components/templates/ModernTemplate";
 import { BoldTemplate } from "@/components/templates/BoldTemplate";
 import { MinimalTemplate } from "@/components/templates/MinimalTemplate";
+import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
 import { DEMO_SITE, DEMO_PHOTOS, DEMO_REVIEWS } from "@/lib/demo-data";
 import type { Site, Photo, Review } from "@/lib/types";
 import type { Metadata } from "next";
@@ -62,21 +63,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${site.headline}${serviceAreas ? ` | Serving ${serviceAreas}` : ""}`
     : site.about_text?.slice(0, 160) || "Professional contractor portfolio";
 
+  // Generate dynamic OG image URL
+  const ogImageUrl = new URL("/api/og", "https://brickprofile.com");
+  ogImageUrl.searchParams.set("title", site.company_name);
+  if (site.headline) {
+    ogImageUrl.searchParams.set("subtitle", site.headline);
+  } else if (serviceAreas) {
+    ogImageUrl.searchParams.set("subtitle", `Serving ${serviceAreas}`);
+  }
+  if (firstPhoto) {
+    ogImageUrl.searchParams.set("image", firstPhoto);
+  }
+
   return {
     title: `${site.company_name} | Professional Portfolio`,
     description,
     openGraph: {
-      title: `${site.company_name}`,
+      title: site.company_name,
       description,
       siteName: "BrickProfile",
       type: "website",
-      ...(firstPhoto && { images: [{ url: firstPhoto, width: 1200, height: 630 }] }),
+      images: [
+        {
+          url: ogImageUrl.toString(),
+          width: 1200,
+          height: 630,
+          alt: `${site.company_name} - Professional Portfolio`,
+        },
+      ],
     },
     twitter: {
-      card: firstPhoto ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: site.company_name,
       description,
-      ...(firstPhoto && { images: [firstPhoto] }),
+      images: [ogImageUrl.toString()],
     },
   };
 }
@@ -143,15 +163,48 @@ export default async function PortfolioSitePage({ params }: Props) {
     reviews: (reviews || []) as Review[],
   };
 
+  // Build site URL for JSON-LD
+  const siteUrl = site.custom_domain
+    ? `https://${site.custom_domain}`
+    : `https://brickprofile.com/site/${slug}`;
+
+  const jsonLd = (
+    <LocalBusinessJsonLd
+      site={site as Site}
+      reviews={(reviews || []) as Review[]}
+      url={siteUrl}
+    />
+  );
+
   switch (site.template) {
     case "modern":
-      return <ModernTemplate {...templateProps} />;
+      return (
+        <>
+          {jsonLd}
+          <ModernTemplate {...templateProps} />
+        </>
+      );
     case "bold":
-      return <BoldTemplate {...templateProps} />;
+      return (
+        <>
+          {jsonLd}
+          <BoldTemplate {...templateProps} />
+        </>
+      );
     case "minimal":
-      return <MinimalTemplate {...templateProps} />;
+      return (
+        <>
+          {jsonLd}
+          <MinimalTemplate {...templateProps} />
+        </>
+      );
     case "classic":
     default:
-      return <ClassicTemplate {...templateProps} />;
+      return (
+        <>
+          {jsonLd}
+          <ClassicTemplate {...templateProps} />
+        </>
+      );
   }
 }

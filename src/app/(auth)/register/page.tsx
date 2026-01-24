@@ -2,18 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,21 +45,29 @@ export default function RegisterPage() {
       return;
     }
 
-    // Create profile record
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      await supabase.from("ps_profiles").insert({
-        id: user.id,
-        email: user.email,
-      });
-    }
-
-    router.push("/onboarding");
-    router.refresh();
+    setSuccess(true);
+    setLoading(false);
   };
+
+  if (success) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="card p-6 text-center">
+          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Mail className="w-8 h-8 text-green-500" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">Check your inbox</h2>
+          <p className="text-dark-400 mb-4">
+            We sent a confirmation link to:<br />
+            <span className="text-white font-medium">{email}</span>
+          </p>
+          <p className="text-dark-500 text-sm">
+            Click the link in the email to activate your account.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md">
