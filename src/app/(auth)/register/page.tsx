@@ -36,6 +36,9 @@ export default function RegisterPage() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: {
+          source_app: 'brickprofile',
+        },
       },
     });
 
