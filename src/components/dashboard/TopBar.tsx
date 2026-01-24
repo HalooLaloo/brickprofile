@@ -46,7 +46,15 @@ export function TopBar({ user, site }: TopBarProps) {
       {/* Mobile top bar */}
       <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between h-16 px-4 border-b border-dark-800 bg-dark-950">
         <div className="flex items-center gap-2">
-          <img src="/logo.jpeg" alt="BrickProfile" className="w-8 h-8 rounded-lg" />
+          <div className="w-8 h-8 rounded-lg bg-[#132039] flex items-center justify-center">
+            <svg className="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="2" y="6" width="9" height="5" rx="0.5" />
+              <rect x="13" y="6" width="9" height="5" rx="0.5" />
+              <rect x="6" y="13" width="9" height="5" rx="0.5" />
+              <rect x="17" y="13" width="5" height="5" rx="0.5" />
+              <rect x="2" y="13" width="2" height="5" rx="0.5" />
+            </svg>
+          </div>
           <span className="text-lg font-bold">BrickProfile</span>
         </div>
 
