@@ -24,6 +24,9 @@ import {
   RefreshCw,
   Copy,
   CreditCard,
+  Phone,
+  Mail,
+  ExternalLink,
 } from "lucide-react";
 
 const features = [
@@ -219,14 +222,25 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Hero Preview Mockup */}
+          {/* Hero Preview Mockup - Clickable */}
           <div className="relative max-w-5xl mx-auto">
             {/* Glow effects */}
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl" />
             <div className="absolute -bottom-20 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
 
-            {/* Browser mockup */}
-            <div className="relative rounded-xl overflow-hidden border border-dark-700 bg-dark-900 shadow-2xl">
+            {/* Browser mockup - Clickable link to demo */}
+            <Link
+              href="/site/demo"
+              className="relative block rounded-xl overflow-hidden border border-dark-700 bg-dark-900 shadow-2xl group transition-all duration-300 hover:border-brand-500/50 hover:shadow-brand-500/20 hover:shadow-2xl"
+            >
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-brand-500/0 group-hover:bg-brand-500/10 transition-colors z-10 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <div className="bg-brand-500 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
+                  <ExternalLink className="w-5 h-5" />
+                  View Live Demo
+                </div>
+              </div>
+
               {/* Browser header */}
               <div className="flex items-center gap-2 px-4 py-3 bg-dark-800 border-b border-dark-700">
                 <div className="flex gap-1.5">
@@ -235,85 +249,103 @@ export default function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-green-500/80" />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <div className="px-4 py-1 rounded-md bg-dark-700 text-dark-400 text-xs">
+                  <div className="px-4 py-1.5 rounded-md bg-dark-700 text-dark-400 text-xs flex items-center gap-2">
+                    <Globe className="w-3 h-3" />
                     demo.brickprofile.com
                   </div>
+                </div>
+                <div className="text-xs text-dark-500 group-hover:text-brand-400 transition-colors flex items-center gap-1">
+                  <span className="hidden sm:inline">Click to view</span>
+                  <ArrowRight className="w-3 h-3" />
                 </div>
               </div>
 
               {/* Content preview - Real portfolio look */}
               <div className="p-6 sm:p-8 bg-gradient-to-b from-dark-900 to-dark-950">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  {/* Left side - company info */}
-                  <div className="space-y-4">
-                    <p className="text-sm font-medium text-brand-400 tracking-wide">SYDNEY & SURROUNDS</p>
-                    <h3 className="text-2xl sm:text-3xl font-bold text-white">Smith Renovations</h3>
-                    <p className="text-dark-400 text-sm leading-relaxed">
-                      Quality bathroom & kitchen renovations with over 15 years of experience.
-                      Fully licensed and insured.
-                    </p>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <span className="px-3 py-1 bg-dark-800 rounded-full text-xs text-dark-300">Bathrooms</span>
-                      <span className="px-3 py-1 bg-dark-800 rounded-full text-xs text-dark-300">Kitchens</span>
-                      <span className="px-3 py-1 bg-dark-800 rounded-full text-xs text-dark-300">Tiling</span>
+                {/* Hero section preview */}
+                <div className="mb-6 pb-6 border-b border-dark-800">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold text-xl">
+                      SR
                     </div>
-                    <div className="flex gap-3 pt-2">
-                      <div className="h-10 px-5 bg-brand-500 rounded-lg flex items-center justify-center text-sm font-medium text-white">
-                        Get Quote
-                      </div>
-                      <div className="h-10 px-5 bg-dark-700 rounded-lg flex items-center justify-center text-sm text-dark-300">
-                        +61 400 123 456
-                      </div>
+                    <div>
+                      <h3 className="text-xl sm:text-2xl font-bold text-white">Smith Renovations</h3>
+                      <p className="text-sm text-dark-400">Sydney & Surrounds • 15+ Years Experience</p>
                     </div>
                   </div>
+                  <p className="text-dark-300 text-sm leading-relaxed max-w-xl">
+                    Quality bathroom & kitchen renovations. Fully licensed, insured, and committed to excellence on every project.
+                  </p>
+                </div>
 
-                  {/* Right side - real portfolio images */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <img
-                      src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&q=80"
-                      alt="Bathroom renovation"
-                      className="aspect-square object-cover rounded-lg"
-                    />
-                    <img
-                      src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80"
-                      alt="Kitchen renovation"
-                      className="aspect-square object-cover rounded-lg"
-                    />
-                    <img
-                      src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&q=80"
-                      alt="Ensuite renovation"
-                      className="aspect-square object-cover rounded-lg"
-                    />
-                    <img
-                      src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80"
-                      alt="Kitchen design"
-                      className="aspect-square object-cover rounded-lg"
-                    />
+                {/* Portfolio grid */}
+                <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-6">
+                  <img
+                    src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&q=80"
+                    alt="Bathroom renovation"
+                    className="aspect-square object-cover rounded-lg group-hover:opacity-90 transition-opacity"
+                  />
+                  <img
+                    src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80"
+                    alt="Kitchen renovation"
+                    className="aspect-square object-cover rounded-lg group-hover:opacity-90 transition-opacity"
+                  />
+                  <img
+                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&q=80"
+                    alt="Ensuite renovation"
+                    className="aspect-square object-cover rounded-lg group-hover:opacity-90 transition-opacity"
+                  />
+                  <img
+                    src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80"
+                    alt="Kitchen design"
+                    className="aspect-square object-cover rounded-lg group-hover:opacity-90 transition-opacity"
+                  />
+                </div>
+
+                {/* Services & Reviews row */}
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1.5 bg-dark-800 rounded-full text-xs text-dark-300 font-medium">🛁 Bathrooms</span>
+                    <span className="px-3 py-1.5 bg-dark-800 rounded-full text-xs text-dark-300 font-medium">🍳 Kitchens</span>
+                    <span className="px-3 py-1.5 bg-dark-800 rounded-full text-xs text-dark-300 font-medium">🔨 Tiling</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-semibold text-white">5.0</span>
+                      <span className="text-xs text-dark-500">(47 reviews)</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Reviews preview */}
-                <div className="mt-6 pt-6 border-t border-dark-800">
-                  <div className="flex items-center gap-4">
-                    <div className="flex -space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-xs font-bold text-white border-2 border-dark-900">S</div>
-                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs font-bold text-white border-2 border-dark-900">M</div>
-                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white border-2 border-dark-900">D</div>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="ml-1 text-sm text-dark-400">5.0</span>
-                      </div>
-                      <p className="text-xs text-dark-500">Based on 47 reviews</p>
-                    </div>
+                {/* CTA Preview */}
+                <div className="mt-6 pt-6 border-t border-dark-800 flex flex-wrap gap-3">
+                  <div className="h-11 px-6 bg-brand-500 rounded-lg flex items-center justify-center text-sm font-semibold text-white">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Get AI Quote
+                  </div>
+                  <div className="h-11 px-6 bg-dark-800 rounded-lg flex items-center justify-center text-sm text-dark-300">
+                    <Phone className="w-4 h-4 mr-2" />
+                    +61 400 123 456
+                  </div>
+                  <div className="h-11 px-6 bg-dark-800 rounded-lg flex items-center justify-center text-sm text-dark-300">
+                    <Mail className="w-4 h-4 mr-2" />
+                    Contact Form
                   </div>
                 </div>
               </div>
+            </Link>
+
+            {/* "Click to explore" hint below mockup */}
+            <div className="text-center mt-4">
+              <Link
+                href="/site/demo"
+                className="inline-flex items-center gap-2 text-sm text-dark-400 hover:text-brand-400 transition-colors"
+              >
+                <span>👆 Click the preview above or</span>
+                <span className="font-medium text-brand-400 underline underline-offset-2">view demo site</span>
+                <ExternalLink className="w-3 h-3" />
+              </Link>
             </div>
 
             {/* Floating badges */}
